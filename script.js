@@ -24,7 +24,7 @@ function openEnvelope() {
   const flapHeight = flap.offsetHeight;
 
   // Apply rotateX + translateY upward by flap height
-  flap.style.transform = `rotateX(180deg) translateY(-${flapHeight}px)`;
+  flap.style.transform = `rotateX(180deg) translateY(${flapHeight}px)`;
 
   message.textContent = getTodaysMessage();
 }
