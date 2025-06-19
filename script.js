@@ -12,10 +12,20 @@ function getTodaysMessage() {
   return loveMessages[dayOfYear % loveMessages.length];
 }
 
+
 function openEnvelope() {
   const envelope = document.querySelector('.envelope');
+  const flap = document.querySelector('.flap');
   const message = document.getElementById('loveMessage');
 
   envelope.classList.add('open');
+
+  // Get flap height dynamically
+  const flapHeight = flap.offsetHeight;
+
+  // Apply rotateX + translateY upward by flap height
+  flap.style.transform = `rotateX(180deg) translateY(-${flapHeight}px)`;
+
   message.textContent = getTodaysMessage();
 }
+

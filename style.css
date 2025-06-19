@@ -10,6 +10,7 @@ body {
 
 .container {
   text-align: center;
+  padding: 20px;
 }
 
 .envelope {
@@ -22,6 +23,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   transition: transform 0.3s;
+  margin: auto;
 }
 
 .envelope:hover {
@@ -53,6 +55,7 @@ body {
   transform: translateY(30px);
   transition: opacity 1s ease, transform 1s ease;
   z-index: 1;
+  font-size: 1rem;
 }
 
 .envelope.open .flap {
@@ -61,5 +64,21 @@ body {
 
 .envelope.open .letter {
   opacity: 1;
-  transform: translateY(-150px);
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .envelope {
+    width: 90vw;
+    height: auto;
+  }
+
+  .letter {
+    font-size: 1.1rem;
+    top: 40px;
+  }
+
+  .flap {
+    height: 40%;
+  }
 }
