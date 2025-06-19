@@ -1,0 +1,65 @@
+body {
+  background: linear-gradient(to right, #ffe1e1, #ffe6fa);
+  font-family: 'Georgia', serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  text-align: center;
+}
+
+.envelope {
+  width: 300px;
+  height: 200px;
+  position: relative;
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid #d4a5a5;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  transition: transform 0.3s;
+}
+
+.envelope:hover {
+  transform: scale(1.05);
+}
+
+.flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #f4c2c2;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transition: transform 1s;
+  z-index: 2;
+}
+
+.letter {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  right: 10px;
+  padding: 20px;
+  background: #fffaf0;
+  border: 1px solid #ffc0cb;
+  border-radius: 8px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease, transform 1s ease;
+  z-index: 1;
+}
+
+.envelope.open .flap {
+  transform: rotateX(180deg);
+}
+
+.envelope.open .letter {
+  opacity: 1;
+  transform: translateY(0);
+}
