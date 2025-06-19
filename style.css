@@ -61,5 +61,5 @@ body {
 
 .envelope.open .letter {
   opacity: 1;
-  transform: translateY(-50px);
+  transform: translateY(-150px);
 }
