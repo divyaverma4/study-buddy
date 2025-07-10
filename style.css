@@ -35,14 +35,14 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  /* Use relative height */
-  height: 30%;  /* smaller flap */
+  height: 50px;
   background: #f4c2c2;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transition: transform 1s;
   z-index: 2;
-  transform-origin: center bottom;
+  transform-origin: bottom center;
 }
+
 
 .letter {
   position: relative; /* relative inside envelope */
@@ -62,8 +62,9 @@ body {
 
 /* When open */
 .envelope.open .flap {
-  transform: rotateX(180deg);
+  transform: rotateX(180deg) translateY(-100%);
 }
+
 
 .envelope.open .letter {
   opacity: 1;
