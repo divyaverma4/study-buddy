@@ -15,7 +15,8 @@ body {
 
 .envelope {
   width: 300px;
-  height: 200px;
+  /* Remove fixed height */
+  min-height: 150px; /* minimum height */
   position: relative;
   cursor: pointer;
   background: #fff;
@@ -24,10 +25,9 @@ body {
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   transition: transform 0.3s;
   margin: auto;
-}
-
-.envelope:hover {
-  transform: scale(1.05);
+  padding-top: 60px; /* make room for flap */
+  box-sizing: border-box;
+  display: inline-block; /* shrink-wrap to content */
 }
 
 .flap {
@@ -35,18 +35,17 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 50%;
+  /* Use relative height */
+  height: 30%;  /* smaller flap */
   background: #f4c2c2;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transition: transform 1s;
   z-index: 2;
+  transform-origin: center bottom;
 }
 
 .letter {
-  position: absolute;
-  top: 50px;
-  left: 10px;
-  right: 10px;
+  position: relative; /* relative inside envelope */
   padding: 20px;
   background: #fffaf0;
   border: 1px solid #ffc0cb;
@@ -56,8 +55,12 @@ body {
   transition: opacity 1s ease, transform 1s ease;
   z-index: 1;
   font-size: 1rem;
+  white-space: pre-wrap; /* allow line breaks */
+  max-height: 60vh; /* prevent from getting too tall */
+  overflow-y: auto;
 }
 
+/* When open */
 .envelope.open .flap {
   transform: rotateX(180deg);
 }
@@ -67,18 +70,20 @@ body {
   transform: translateY(0);
 }
 
+/* Responsive tweaks */
 @media (max-width: 480px) {
   .envelope {
     width: 90vw;
-    height: auto;
+    min-height: auto;
+    padding-top: 50px;
   }
 
   .letter {
     font-size: 1.1rem;
-    top: 40px;
+    max-height: 50vh;
   }
 
   .flap {
-    height: 40%;
+    height: 25%;
   }
 }
