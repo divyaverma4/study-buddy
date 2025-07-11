@@ -7,15 +7,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-    <div class="envelope" onclick="openEnvelope()">
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('love')">Love Letters</div>
+    <div class="tab" onclick="showTab('timeline')">Timeline of Us</div>
+  </div>
+
+  <!-- Love Letters Tab -->
+  <div id="love" class="tab-content active">
+    <div class="container">
+      <div class="envelope" onclick="openEnvelope()">
         <div class="flap"></div>
         <div class="letter">
-            <p id="loveMessage">Click me for today's love letter 💖</p>
+          <p id="loveMessage">Click me for today's love letter 💖</p>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<script src="script.js"></script>
+  <!-- Timeline Tab -->
+  <div id="timeline" class="tab-content">
+    <div class="timeline-container">
+      <h2>Our Journey ❤️</h2>
+      <ul class="timeline">
+        <li><strong>Jan 2023:</strong> We met for the first time 🥹</li>
+        <li><strong>Feb 2023:</strong> Our first date 💫</li>
+        <li><strong>May 2023:</strong> That cute beach trip 🏖️</li>
+        <li><strong>Sep 2023:</strong> Said "I love you" 😍</li>
+        <li><strong>Feb 2024:</strong> Our little adventure in the snow ❄️</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
