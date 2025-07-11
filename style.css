@@ -15,23 +15,27 @@ body {
 
 .envelope {
   width: 300px;
+  max-width: 90vw;
+  height: 200px;
   position: relative;
-  min-height: 150px;
   background: #fff;
   border: 2px solid #d4a5a5;
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  margin: auto;
-  padding-top: 60px; /* make space for the flap */
+  padding-top: 60px;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .flap {
   position: absolute;
-  top: -60px; /* lift flap above the envelope */
+  top: -60px;
   left: 0;
   width: 100%;
-  height: 60px; /* height of the triangle flap */
+  height: 60px;
   background: #f4c2c2;
   clip-path: polygon(0 100%, 50% 0, 100% 100%);
   z-index: 2;
@@ -39,54 +43,48 @@ body {
   transition: transform 1s ease;
 }
 
-
-
 .letter {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translateY(30px); /* shift into view + animate from below */
-  padding: 20px;
   background: #fffaf0;
   border: 1px solid #ffc0cb;
   border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  white-space: pre-wrap;
+  max-width: 90%;
+  max-height: 100%;
+  overflow: auto;
   opacity: 0;
   transition: opacity 1s ease, transform 1s ease;
   z-index: 1;
-  font-size: 1rem;
-  white-space: pre-wrap; /* allows line breaks */
-  max-width: 90%;
-  box-sizing: border-box;
-  text-align: center;
-}
 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateY(30px);
+
+  font-size: clamp(0.8rem, 2.5vw, 1.2rem); /* dynamic sizing */
+  line-height: 1.4;
+  box-sizing: border-box;
+}
 
 .envelope.open .flap {
   transform: rotateX(180deg);
 }
 
-
-
 .envelope.open .letter {
   opacity: 1;
-  transform: translate(-50%, -50%); /* center perfectly */
+  transform: translate(-50%, -50%);
 }
-
 
 /* Responsive tweaks */
 @media (max-width: 480px) {
   .envelope {
     width: 90vw;
-    min-height: auto;
+    height: 180px;
     padding-top: 50px;
   }
 
-  .letter {
-    font-size: 1.1rem;
-    max-height: 50vh;
-  }
-
   .flap {
-    height: 25%;
+    height: 50px;
   }
 }
