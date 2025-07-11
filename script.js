@@ -1,6 +1,6 @@
 let loveMessages = [];
 
-fetch("love_letters.json")
+fetch('love_letters.json')
   .then(response => response.json())
   .then(data => {
     loveMessages = data;
