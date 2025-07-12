@@ -93,6 +93,7 @@ body {
   transition: transform 0.6s ease;
   z-index: 2;
   clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  transform: rotate(180 deg);
 }
 
 .letter {
