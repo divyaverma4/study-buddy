@@ -28,15 +28,28 @@ function openEnvelope() {
   const envelope = document.querySelector('.envelope');
   const flap = document.querySelector('.flap');
   const message = document.getElementById('loveMessage');
+  const resetButton = document.getElementById('resetButton');
+
+  if (envelope.classList.contains('open')) return;
 
   envelope.classList.add('open');
-
-  // Get flap height dynamically
   const flapHeight = flap.offsetHeight;
-
-  // Apply rotateX + translateY upward by flap height
   flap.style.transform = `rotateX(180deg) translateY(${flapHeight}px)`;
-
   message.textContent = getTodaysMessage();
+  resetButton.style.display = 'block';
 }
+
+
+function resetEnvelope() {
+  const envelope = document.querySelector('.envelope');
+  const flap = document.querySelector('.flap');
+  const message = document.getElementById('loveMessage');
+  const resetButton = document.getElementById('resetButton');
+
+  envelope.classList.remove('open');
+  flap.style.transform = 'rotateX(0deg) translateY(0)';
+  message.textContent = 'Click me for today\'s love letter 💖';
+  resetButton.style.display = 'none';
+}
+
 
