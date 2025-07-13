@@ -94,6 +94,22 @@ body {
   z-index: 2;
 }
 
+.envelope-inside {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 50%;
+  background: #ffc6d1; /* same pink as flap */
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  z-index: 1.5; /* below flap (z-index: 2), above letter (z-index: 1) */
+  transition: opacity 0.4s ease;
+}
+.envelope.open .envelope-inside {
+  opacity: 0;
+}
+
+
 .letter {
   padding: 2rem 1.5rem;
   font-size: 1.5rem;
