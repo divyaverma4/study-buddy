@@ -89,12 +89,16 @@ body {
   border-bottom: 2px solid #e3a4b5;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  transform-origin: bottom;
+  transform-origin: top; /* Change from 'bottom' to 'top' */
   transition: transform 0.6s ease;
   z-index: 2;
-  clip-path: polygon(0 100%, 50% 0, 100% 100%);
-  transform: rotate(180 deg);
+  backface-visibility: hidden; /* Optional for better effect */
 }
+
+.envelope.open .flap {
+  transform: rotateX(-160deg); /* Fold it back away */
+}
+
 
 .envelope-inside {
   position: absolute;
