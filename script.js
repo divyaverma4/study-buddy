@@ -12,16 +12,6 @@ function getTodaysMessage() {
   return loveMessages[dayOfYear % loveMessages.length];
 }
 
-/*
-function showTab(tabId) {
-  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-  event.target.classList.add('active');
-  document.getElementById(tabId).classList.add('active');
-}
-  */
-
 
 
 function openEnvelope() {
@@ -34,7 +24,6 @@ function openEnvelope() {
 
   envelope.classList.add('open');
   const flapHeight = flap.offsetHeight;
-  flap.style.transform = `rotateX(180deg) translateY(${flapHeight}px)`;
   message.textContent = getTodaysMessage();
   resetButton.style.display = 'block';
 }
