@@ -84,21 +84,26 @@ body {
   position: absolute;
   top: 0;
   width: 100%;
-  height: 50%;
+  height: 100%;
   background: #ffc6d1;
   border-bottom: 2px solid #e3a4b5;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  transform-origin: top; /* Change from 'bottom' to 'top' */
+  transform-origin: bottom;
   transition: transform 0.6s ease;
   z-index: 2;
-  backface-visibility: hidden; /* Optional for better effect */
 }
 
-.envelope.open .flap {
-  transform: rotateX(-160deg); /* Fold it back away */
+.triangle-down {
+  width: 100%;
+  height: 50%;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  background: #ffc6d1;
+  border-top: 2px solid #e3a4b5;
+  transition: transform 0.6s ease;
+  z-index: 2;
 }
-
 
 .envelope-inside {
   position: absolute;
