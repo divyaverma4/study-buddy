@@ -48,7 +48,7 @@ function resetEnvelope() {
 
   envelope.classList.remove('open');
   flap.style.transform = 'rotateX(0deg) translateY(0)';
-  message.textContent = 'Click me for today\'s love letter 💖';
+  message.textContent = 'Click me 💖';
   resetButton.style.display = 'none';
 }
 
