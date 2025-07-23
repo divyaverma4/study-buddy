@@ -1,7 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap');
 
+/* try using that live server vs code extention or other extentions to test changes locally without pushing every time */
+/* SEE IF I CAN CONNECT LETTER UPLOAD TO AN API SO I CAN CONSTANTLY UPLOAD AND THE MSGS WILL ROTATE */
+/* ALSO SEE IF POSSIBLE TO WRITE CODE FOR OPENING AND CLOSING LINES OF EACH LETTER */
+@import url('https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap');
+
 body {
-  background: linear-gradient(to right, #ffe1e1, #ffe6fa);
+  background: linear-gradient(to right, #b8c8d9, #abc9e9);
   font-family: 'Georgia', serif;
   display: flex;
   flex-direction: column;
@@ -29,10 +34,6 @@ body {
   transition: background 0.3s ease;
 }
 
-.tab:hover {
-  background-color: #ffe6fa;
-}
-
 .tab.active {
   background-color: #ffccdd;
 }
@@ -40,6 +41,7 @@ body {
 .container {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -50,7 +52,7 @@ body {
   max-width: 90vw;
   height: 250px;
   position: relative;
-  background: #fff;
+  background: #e7b5c3;
   border: 2px solid #e3a4b5;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -66,11 +68,11 @@ body {
 }
 
 .envelope::after {
-  content: "Click to open 💌";
+  content: "Click Envelope to Open 💖";
   position: absolute;
-  top: -25px;
+  top: -50px;
   font-size: 1rem;
-  color: #aa4a5c;
+  color: #000;
   opacity: 0.8;
   animation: bounce 2s infinite;
 }
@@ -80,58 +82,38 @@ body {
   50% { transform: translateY(-5px); }
 }
 
+/* Triangle Flap */
 .flap {
   position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: #ffc6d1;
-  border-bottom: 2px solid #e3a4b5;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  transform-origin: bottom;
+  top: -125px; /* pull the triangle up so its bottom (hypotenuse) aligns with envelope top */
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 200px solid transparent;
+  border-right: 200px solid transparent;
+  border-bottom: 125px solid #ffc6d1;
+  transform-origin: bottom center;
+  transform: rotateX(180deg);
   transition: transform 0.6s ease;
   z-index: 2;
 }
 
-.triangle-down {
-  width: 100%;
-  height: 50%;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  background: #ffc6d1;
-  border-top: 2px solid #e3a4b5;
-  transition: transform 0.6s ease;
-  z-index: 2;
+.envelope.open .flap {
+  transform: rotateX(-180deg);
 }
-
-.envelope-inside {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 50%;
-  background: #ffc6d1; /* same pink as flap */
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  z-index: 1.5; /* below flap (z-index: 2), above letter (z-index: 1) */
-  transition: opacity 0.4s ease;
-}
-.envelope.open .envelope-inside {
-  opacity: 0;
-}
-
 
 .letter {
   padding: 2rem 1.5rem;
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 2vw, 2rem);
   text-align: center;
   max-height: 60%;
   overflow-y: auto;
   z-index: 1;
   font-family: "Markazi Text", serif;
+  pointer-events: none; /* Prevents early click during flap */
 }
 
-/* Responsive Styling */
+/* Responsive */
 @media (max-width: 600px) {
   .envelope {
     width: 90vw;
@@ -148,6 +130,7 @@ body {
   }
 }
 
+/* Reset Button */
 #resetButton {
   margin-top: 1rem;
   background-color: #ffc6d1;

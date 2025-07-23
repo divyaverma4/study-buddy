@@ -51,5 +51,3 @@ function resetEnvelope() {
   message.textContent = 'Click me 💖';
   resetButton.style.display = 'none';
 }
-
-

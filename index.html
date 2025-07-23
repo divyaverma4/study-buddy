@@ -8,24 +8,16 @@
 </head>
 <body>
   <div class="tabs">
-    <div class="tab active">Love Letters</div>
-    <div class="tab" onclick="window.location.href='timeline.html'">Timeline of Us</div>
+    <div class="tab active">Joey's Love Letters 💌</div>
   </div>
 
   <div class="container">
     <div class="envelope" onclick="openEnvelope()">
       <div class="flap"></div>
-      <div class="triangle-down"></div>
-      <div class="letter">
-        <p id="loveMessage">Click me for today's love letter 💖</p>
-      </div>
+      <div class="letter" id="loveMessage"> </div>
     </div>
-    <button id="resetButton" onclick="resetEnvelope()" style="display: none;">
-  Close 
-</button>
-
+    <button id="resetButton" onclick="resetEnvelope()" style="display: none;">Close 💌</button>
   </div>
-
-  <script src="script.js"></script>
 </body>
+<script src="script.js" defer></script>
 </html>
