@@ -18,8 +18,18 @@
         <div class="card-back" id="cardBack"></div>
       </div>
     </div>
+
     <button id="resetButton" onclick="unflipCard()" style="display: none;">Reset 🔄</button>
+
+    <button id="historyButton" onclick="showHistory()">📜 View Word History</button>
+    <button id="favoritesButton" onclick="showFavorites()">⭐ Show Favorite Languages</button>
+    <button id="closeHistoryButton" onclick="closeHistory()" style="display:none;">❌ Close Panel</button>
+    <button id="clearHistoryButton" onclick="clearHistory()" style="display:none;">🗑 Clear History</button>
+    <button id="clearFavoritesButton" onclick="clearFavorites()" style="display:none;">🗑 Clear Favorites</button>
+
+    <div id="historyContainer" class="history-box" style="display: none;"></div>
   </div>
 </body>
 <script src="script.js" defer></script>
 </html>
+
