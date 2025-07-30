@@ -4,6 +4,7 @@ fetch('words.json')
   .then(response => response.json())
   .then(data => {
     words = data;
+    displayWord();
   });
 
 function getTodaysWord() {
@@ -12,36 +13,23 @@ function getTodaysWord() {
   return words[dayOfYear % words.length];
 }
 
-function openEnvelope() {
-  const envelope = document.querySelector('.envelope');
-  const flap = document.querySelector('.flap');
-  const message = document.getElementById('loveMessage');
-  const resetButton = document.getElementById('resetButton');
-
-  if (envelope.classList.contains('open')) return;
-
-  envelope.classList.add('open');
-  const flapHeight = flap.offsetHeight;
-  flap.style.transform = `rotateX(180deg) translateY(${flapHeight}px)`;
-
+function displayWord() {
   const wordData = getTodaysWord();
-  message.innerHTML = `
-    <h2>${wordData.word}</h2>
+  document.getElementById('cardFront').textContent = wordData.word;
+  document.getElementById('cardBack').innerHTML = `
     <p><strong>Language:</strong> ${wordData.language}</p>
     <p><strong>Meaning:</strong> ${wordData.meaning}</p>
   `;
-
-  resetButton.style.display = 'block';
 }
 
-function resetEnvelope() {
-  const envelope = document.querySelector('.envelope');
-  const flap = document.querySelector('.flap');
-  const message = document.getElementById('loveMessage');
-  const resetButton = document.getElementById('resetButton');
+function flipCard() {
+  const card = document.getElementById('cardInner');
+  card.classList.add('flipped');
+  document.getElementById('resetButton').style.display = 'block';
+}
 
-  envelope.classList.remove('open');
-  flap.style.transform = 'rotateX(0deg) translateY(0)';
-  message.textContent = 'Click me 🌍';
-  resetButton.style.display = 'none';
+function unflipCard() {
+  const card = document.getElementById('cardInner');
+  card.classList.remove('flipped');
+  document.getElementById('resetButton').style.display = 'none';
 }
