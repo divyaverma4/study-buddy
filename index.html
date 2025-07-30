@@ -12,11 +12,13 @@
   </div>
 
   <div class="container">
-    <div class="envelope" onclick="openEnvelope()">
-      <div class="flap"></div>
-      <div class="letter" id="loveMessage"> </div>
+    <div class="flashcard" onclick="flipCard()">
+      <div class="card-inner" id="cardInner">
+        <div class="card-front" id="cardFront">Loading...</div>
+        <div class="card-back" id="cardBack"></div>
+      </div>
     </div>
-    <button id="resetButton" onclick="resetEnvelope()" style="display: none;">Close ✖️</button>
+    <button id="resetButton" onclick="unflipCard()" style="display: none;">Reset 🔄</button>
   </div>
 </body>
 <script src="script.js" defer></script>
