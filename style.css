@@ -8,7 +8,6 @@ body {
   align-items: center;
   margin: 0;
   height: 100vh;
-  overflow: hidden;
 }
 
 .tabs {
@@ -26,7 +25,6 @@ body {
   cursor: pointer;
   font-weight: bold;
   border-radius: 1rem;
-  transition: background 0.3s ease;
 }
 
 .tab.active {
@@ -42,90 +40,54 @@ body {
   width: 100%;
 }
 
-.envelope {
-  width: 400px;
-  max-width: 90vw;
-  height: 250px;
-  position: relative;
-  background: #9fd5e0;
-  border: 2px solid #86c7da;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+.flashcard {
+  width: 350px;
+  height: 200px;
+  perspective: 1000px;
   cursor: pointer;
-  transition: transform 0.5s ease;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.envelope:hover {
-  transform: scale(1.02);
-}
-
-.envelope::after {
-  content: "Tap Envelope for Today's Word 🌍";
-  position: absolute;
-  top: -50px;
-  font-size: 1rem;
-  color: #333;
-  opacity: 0.9;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-/* Triangle Flap */
-.flap {
-  position: absolute;
-  top: -125px;
-  left: 0;
-  width: 0;
-  height: 0;
-  border-left: 200px solid transparent;
-  border-right: 200px solid transparent;
-  border-bottom: 125px solid #c7eaf2;
-  transform-origin: bottom center;
-  transform: rotateX(180deg);
-  transition: transform 0.6s ease;
-  z-index: 2;
-}
-
-.envelope.open .flap {
-  transform: rotateX(-180deg);
-}
-
-.letter {
-  padding: 2rem 1.5rem;
-  font-size: clamp(1.2rem, 2vw, 2rem);
-  text-align: center;
-  max-height: 60%;
-  overflow-y: auto;
-  z-index: 1;
+  font-size: 2rem;
   font-family: "Markazi Text", serif;
-  pointer-events: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  text-align: center;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .envelope {
-    width: 90vw;
-    height: auto;
-    padding: 1rem;
-  }
-
-  .letter {
-    font-size: 1.2rem;
-  }
-
-  .envelope::after {
-    font-size: 0.9rem;
-  }
+.card-front {
+  background-color: #9fd5e0;
+  color: #0b3c4e;
 }
 
-/* Reset Button */
+.card-back {
+  background-color: #c7eaf2;
+  color: #064c5a;
+  transform: rotateY(180deg);
+  font-size: 1.3rem;
+  line-height: 1.5;
+}
+
 #resetButton {
   margin-top: 1rem;
   background-color: #c7eaf2;
