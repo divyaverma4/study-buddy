@@ -1,12 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap');
 
-/* try using that live server vs code extention or other extentions to test changes locally without pushing every time */
-/* SEE IF I CAN CONNECT LETTER UPLOAD TO AN API SO I CAN CONSTANTLY UPLOAD AND THE MSGS WILL ROTATE */
-/* ALSO SEE IF POSSIBLE TO WRITE CODE FOR OPENING AND CLOSING LINES OF EACH LETTER */
-@import url('https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400..700&display=swap');
-
 body {
-  background: linear-gradient(to right, #b8c8d9, #abc9e9);
+  background: linear-gradient(to right, #b4d8e7, #d4ebf2);
   font-family: 'Georgia', serif;
   display: flex;
   flex-direction: column;
@@ -19,7 +14,7 @@ body {
 .tabs {
   display: flex;
   justify-content: center;
-  background-color: #fff0f5;
+  background-color: #eaf7fa;
   width: 100%;
   padding: 1rem 0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -35,7 +30,7 @@ body {
 }
 
 .tab.active {
-  background-color: #ffccdd;
+  background-color: #a8def0;
 }
 
 .container {
@@ -52,8 +47,8 @@ body {
   max-width: 90vw;
   height: 250px;
   position: relative;
-  background: #e7b5c3;
-  border: 2px solid #e3a4b5;
+  background: #9fd5e0;
+  border: 2px solid #86c7da;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -68,12 +63,12 @@ body {
 }
 
 .envelope::after {
-  content: "Click Envelope to Open 💖";
+  content: "Tap Envelope for Today's Word 🌍";
   position: absolute;
   top: -50px;
   font-size: 1rem;
-  color: #000;
-  opacity: 0.8;
+  color: #333;
+  opacity: 0.9;
   animation: bounce 2s infinite;
 }
 
@@ -85,13 +80,13 @@ body {
 /* Triangle Flap */
 .flap {
   position: absolute;
-  top: -125px; /* pull the triangle up so its bottom (hypotenuse) aligns with envelope top */
+  top: -125px;
   left: 0;
   width: 0;
   height: 0;
   border-left: 200px solid transparent;
   border-right: 200px solid transparent;
-  border-bottom: 125px solid #ffc6d1;
+  border-bottom: 125px solid #c7eaf2;
   transform-origin: bottom center;
   transform: rotateX(180deg);
   transition: transform 0.6s ease;
@@ -110,7 +105,7 @@ body {
   overflow-y: auto;
   z-index: 1;
   font-family: "Markazi Text", serif;
-  pointer-events: none; /* Prevents early click during flap */
+  pointer-events: none;
 }
 
 /* Responsive */
@@ -133,12 +128,12 @@ body {
 /* Reset Button */
 #resetButton {
   margin-top: 1rem;
-  background-color: #ffc6d1;
+  background-color: #c7eaf2;
   border: none;
   padding: 0.7rem 1.5rem;
   border-radius: 1rem;
   font-size: 1rem;
-  color: #8b2e3f;
+  color: #064c5a;
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -146,5 +141,5 @@ body {
 }
 
 #resetButton:hover {
-  background-color: #fdaebf;
+  background-color: #b3dce8;
 }
