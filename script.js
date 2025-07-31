@@ -17,6 +17,7 @@ function getTodaysWord() {
 
 function displayWord() {
   const wordData = getTodaysWord();
+  currentWord = wordData.word;
   document.getElementById('cardFront').textContent = wordData.word;
   document.getElementById('cardBack').innerHTML = `
     <p><strong>Language:</strong> ${wordData.language}</p>
@@ -27,6 +28,25 @@ function displayWord() {
 
   saveToHistory(wordData);
 }
+
+function showNewWord(word) {
+  const found = words.find(w => w.word.toLowerCase() === word.toLowerCase());
+  if (found) {
+    document.getElementById('cardFront').textContent = found.word;
+    document.getElementById('cardBack').innerHTML = `
+      <p><strong>Language:</strong> ${found.language}</p>
+      <p><strong>Meaning:</strong> ${found.meaning}</p>
+      <button onclick="pronounceWord('${found.word}', '${found.language}')" class="speak-btn">🔊 Pronounce</button>
+      <button onclick="toggleFavorite('${found.language}')" class="favorite-btn">⭐ Favorite ${found.language}</button>
+    `;
+    currentWord = found.word;
+    saveToHistory(found);
+    unflipCard();
+  } else {
+    alert("Suggested word not found in your list.");
+  }
+}
+
 
 function flipCard() {
   const card = document.getElementById('cardInner');
