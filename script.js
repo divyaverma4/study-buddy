@@ -1,4 +1,5 @@
 // TODO: DO NOT HARDCODE BEARER TOKEN. INSTEAD, MAKE SECURE PROXY BACKEND
+// https://chatgpt.com/share/688bbeee-7738-8004-8c0b-25801a8bbfcf
 
 let words = [];
 let currentWord = "";
