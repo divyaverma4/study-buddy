@@ -151,3 +151,43 @@ function clearFavorites() {
     alert('Favorite languages cleared.');
   }
 }
+
+async function suggestSimilarWords() {
+  const similarWordsDiv = document.getElementById("similarWords");
+  similarWordsDiv.innerHTML = "Loading suggestions...";
+
+  const prompt = `Give me 5 vocabulary words similar to "${currentWord}" in meaning or theme. Just return a comma-separated list.`;
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer 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"
+      },
+      body: JSON.stringify({
+        model: "text-davinci-003",
+        prompt: prompt,
+        max_tokens: 60,
+        temperature: 0.7
+      })
+    });
+
+    const data = await response.json();
+    const words = data.choices[0].text.trim().split(/,\s*/);
+
+    similarWordsDiv.innerHTML = "";
+    words.forEach(word => {
+      const card = document.createElement("div");
+      card.className = "word-card";
+      card.textContent = word;
+      card.onclick = () => showNewWord(word);
+      similarWordsDiv.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    similarWordsDiv.innerHTML = "Error fetching suggestions.";
+  }
+}
+
