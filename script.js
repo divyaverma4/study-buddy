@@ -1,3 +1,5 @@
+// TODO: DO NOT HARDCODE BEARER TOKEN. INSTEAD, MAKE SECURE PROXY BACKEND
+
 let words = [];
 let currentWord = "";
 
