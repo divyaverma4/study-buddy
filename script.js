@@ -1,4 +1,6 @@
 let words = [];
+let currentWord = "";
+
 
 fetch('words.json')
   .then(response => response.json())
