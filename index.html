@@ -3,48 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Word of the Day 🌍</title>
+  <title>SAT Vocabulary Flashcards</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="tabs">
-    <div class="tab active">Word of the Day 🌐</div>
+    <div class="tab active">SAT Vocabulary Flashcards</div>
+  </div>
+
+  <div class="left-buttons">
+    <button class="favorite-btn" onclick="toggleFavorite()">⭐ Favorite</button>
+    <button id="nextBtn" onclick="showNextCard()">Next Word ➡️</button>
+    <button id="historyButton" onclick="toggleHistory()">🕘 View History</button>
   </div>
 
   <div class="container">
     <div class="flashcard" onclick="flipCard()">
       <div class="card-inner" id="cardInner">
-        <div class="card-front" id="cardFront">Loading...</div>
+        <div class="card-front" id="cardFront"></div>
         <div class="card-back" id="cardBack"></div>
       </div>
     </div>
-    <div class="external-buttons">
-  <button id="externalSpeakBtn" class="speak-btn">🔊 Pronounce</button>
-  <button id="externalFavBtn" class="favorite-btn">⭐ Favorite</button>
-</div>
 
+    <div class="suggestions-container">
+      <h3>AI-Suggested Similar Words</h3>
+      <div class="similar-words" id="similarWords"></div>
+    </div>
 
-<div class="left-buttons">
-  <div class="suggestions-container">
-    <button onclick="suggestSimilarWords()">Suggest Similar Words</button>
-    <div id="similarWords" class="similar-words"></div>
+    <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>
 
-  <button id="historyButton" onclick="showHistory()">📜 View Word History</button>
-  <button id="favoritesButton" onclick="showFavorites()">⭐ Show Favorite Languages</button>
-</div>
-
-
-
-    <button id="resetButton" onclick="unflipCard()" style="display: none;">Reset 🔄</button>
-
-    <button id="closeHistoryButton" onclick="closeHistory()" style="display:none;">❌ Close Panel</button>
-    <button id="clearHistoryButton" onclick="clearHistory()" style="display:none;">🗑 Clear History</button>
-    <button id="clearFavoritesButton" onclick="clearFavorites()" style="display:none;">🗑 Clear Favorites</button>
-
-    <div id="historyContainer" class="history-box" style="display: none;"></div>
-  </div>
+  <script src="script.js"></script>
 </body>
-<script src="script.js" defer></script>
 </html>
-

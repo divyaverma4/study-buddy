@@ -17,19 +17,8 @@ body {
   width: 100%;
   padding: 1rem 0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.tab {
-  margin: 0 1rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
+  font-size: 1.5rem;
   font-weight: bold;
-  border-radius: 1rem;
-  transition: background 0.3s ease;
-}
-
-.tab.active {
-  background-color: #a8def0;
 }
 
 .container {
@@ -38,8 +27,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
   gap: 1rem;
+  padding: 1rem;
 }
 
 .flashcard {
@@ -47,7 +36,6 @@ body {
   height: 200px;
   perspective: 1000px;
   cursor: pointer;
-  padding:3rem;
 }
 
 .card-inner {
@@ -88,90 +76,25 @@ body {
   color: #064c5a;
   transform: rotateY(180deg);
   font-size: 1.3rem;
-  line-height: 1.5;
   flex-direction: column;
+  line-height: 1.4;
 }
 
-button,
-#historyButton,
-#favoritesButton,
-#closeHistoryButton,
-#clearHistoryButton,
-#clearFavoritesButton {
+button {
+  background-color: #fff4cc;
   border: none;
+  padding: 0.6rem 1.4rem;
   border-radius: 1rem;
-  padding: 0.6rem 1.2rem;
   font-size: 1rem;
   font-weight: bold;
+  color: #6a4b00;
   cursor: pointer;
   transition: background 0.3s ease;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin-top: 0.5rem;
 }
 
-#resetButton {
-  background-color: #c7eaf2;
-  color: #064c5a;
-}
-
-#resetButton:hover {
-  background-color: #b3dce8;
-}
-
-.speak-btn {
-  background-color: #b3e2f2;
-  color: #064c5a;
-}
-
-.speak-btn:hover {
-  background-color: #9fd0e0;
-}
-
-.favorite-btn {
-  background-color: #fff4cc;
-  color: #6a4b00;
-}
-
-.favorite-btn:hover {
+button:hover {
   background-color: #ffeb99;
-}
-
-#historyButton,
-#favoritesButton {
-  background-color: #e4f6fc;
-  color: #064c5a;
-}
-
-#historyButton:hover,
-#favoritesButton:hover {
-  background-color: #cbeaf6;
-}
-
-#closeHistoryButton,
-#clearHistoryButton,
-#clearFavoritesButton {
-  background-color: #f8d7da;
-  color: #721c24;
-  margin-left: 0.5rem;
-}
-
-#closeHistoryButton:hover,
-#clearHistoryButton:hover,
-#clearFavoritesButton:hover {
-  background-color: #f5c6cb;
-}
-
-.history-box {
-  margin-top: 1rem;
-  max-height: 250px;
-  overflow-y: auto;
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 1rem;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  font-family: "Markazi Text", serif;
 }
 
 .suggestions-container {
@@ -179,24 +102,12 @@ button,
   text-align: center;
 }
 
-.left-buttons {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  z-index: 1000;
-  padding-top: 10rem;
-}
-
 .similar-words {
-  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .similar-words .word-card {
@@ -212,3 +123,31 @@ button,
 .similar-words .word-card:hover {
   transform: scale(1.05);
 }
+
+/* Add to the bottom of your existing CSS */
+
+.left-buttons {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  z-index: 1000;
+}
+
+.history-box {
+  margin-top: 1rem;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-family: "Markazi Text", serif;
+  display: none;
+}
+

@@ -1,225 +1,130 @@
-// TODO: DO NOT HARDCODE BEARER TOKEN. INSTEAD, MAKE SECURE PROXY BACKEND
-// https://chatgpt.com/share/688bbeee-7738-8004-8c0b-25801a8bbfcf
-// https://platform.openai.com/docs/quickstart
+// TODO: FIX CALL TO API SO THAT IT HITS PROPERLY
+// INTEGRATE AI SOMEHOW
 
-let words = [];
-let currentWord = "";
+let currentIndex = 0;
+let flipped = false;
+let history = [];
 
+const apiKey = WORDS_API_KEY; // Replace with your actual key
+const wordList = ["ephemeral", "loquacious", "ubiquitous"]; // Expand this as needed
+let satWords = [];
 
-fetch('words.json')
-  .then(response => response.json())
-  .then(data => {
-    words = data;
-    displayWord();
-  });
+async function fetchWordData(word) {
+  const cached = JSON.parse(localStorage.getItem("wordDataCache")) || {};
+  if (cached[word]) {
+    return cached[word];
+  }
 
-function getTodaysWord() {
-  const today = new Date();
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
-  return words[dayOfYear % words.length];
-}
-
-function displayWord() {
-  const wordData = getTodaysWord();
-  currentWord = wordData.word;
-
-  document.getElementById('cardFront').textContent = wordData.word;
-  document.getElementById('cardBack').innerHTML = `
-    <p><strong>Language:</strong> ${wordData.language}</p>
-    <p><strong>Meaning:</strong> ${wordData.meaning}</p>
-  `;
-
-  saveToHistory(wordData);
-
-  // Update external buttons (optional)
-  const speakBtn = document.getElementById('externalSpeakBtn');
-  const favBtn = document.getElementById('externalFavBtn');
-
-  speakBtn.onclick = () => pronounceWord(wordData.word, wordData.language);
-  favBtn.onclick = () => toggleFavorite(wordData.language);
-}
-
-function showNewWord(word) {
-  const found = words.find(w => w.word.toLowerCase() === word.toLowerCase());
-  if (found) {
-    document.getElementById('cardFront').textContent = found.word;
-    document.getElementById('cardBack').innerHTML = `
-      <p><strong>Language:</strong> ${found.language}</p>
-      <p><strong>Meaning:</strong> ${found.meaning}</p>
-      <button onclick="pronounceWord('${found.word}', '${found.language}')" class="speak-btn">🔊 Pronounce</button>
-      <button onclick="toggleFavorite('${found.language}')" class="favorite-btn">⭐ Favorite ${found.language}</button>
-    `;
-    currentWord = found.word;
-    saveToHistory(found);
-    unflipCard();
-  } else {
-    alert("Suggested word not found in your list.");
+  try {
+    const res = await fetch(`https://wordsapiv1.p.rapidapi.com/words/${word}`, {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
+        "X-RapidAPI-Key": apiKey
+      }
+    });
+    const data = await res.json();
+    const wordObj = {
+      word: word,
+      definition: data.results?.[0]?.definition || "No definition found.",
+      sentence: data.results?.[0]?.examples?.[0] || "No example found."
+    };
+    cached[word] = wordObj;
+    localStorage.setItem("wordDataCache", JSON.stringify(cached));
+    return wordObj;
+  } catch (e) {
+    return {
+      word: word,
+      definition: "Definition unavailable.",
+      sentence: "Example unavailable."
+    };
   }
 }
 
+async function initWords() {
+  const promises = wordList.map(fetchWordData);
+  satWords = await Promise.all(promises);
+  history = JSON.parse(localStorage.getItem("history")) || [];
+  displayCard(currentIndex);
+}
+
+initWords();
+
+
+
+
+
+function displayCard(index) {
+  const wordObj = satWords[index];
+  document.getElementById('cardFront').textContent = wordObj.word;
+  document.getElementById('cardBack').innerHTML = `
+    <strong>${wordObj.word}</strong><br>
+    <em>${wordObj.definition}</em><br><br>
+    <span>"${wordObj.sentence}"</span>
+  `;
+  document.getElementById('cardInner').classList.remove('flipped');
+  flipped = false;
+
+  // Add to history if not already included
+  if (!history.includes(wordObj.word)) {
+    history.push(wordObj.word);
+    localStorage.setItem("history", JSON.stringify(history));
+  }
+  updateHistoryBox();
+}
 
 function flipCard() {
   const card = document.getElementById('cardInner');
-  card.classList.add('flipped');
-  document.getElementById('resetButton').style.display = 'block';
+  card.classList.toggle('flipped');
+  flipped = !flipped;
 }
 
-function unflipCard() {
-  const card = document.getElementById('cardInner');
-  card.classList.remove('flipped');
-  document.getElementById('resetButton').style.display = 'none';
+function showNextCard() {
+  currentIndex = (currentIndex + 1) % satWords.length;
+  displayCard(currentIndex);
+  showSimilarWords();
 }
 
-function pronounceWord(word, language) {
-  const utterance = new SpeechSynthesisUtterance(word);
-
-  const langMap = {
-    French: 'fr-FR',
-    Japanese: 'ja-JP',
-    Spanish: 'es-ES',
-    German: 'de-DE',
-    Korean: 'ko-KR',
-    Russian: 'ru-RU',
-    Italian: 'it-IT',
-    Arabic: 'ar-SA',
-    Hindi: 'hi-IN'
-  };
-
-  if (langMap[language]) {
-    utterance.lang = langMap[language];
-  }
-
-  speechSynthesis.speak(utterance);
-}
-
-function toggleFavorite(language) {
-  const favorites = JSON.parse(localStorage.getItem('favoriteLanguages')) || [];
-
-  const index = favorites.indexOf(language);
-  if (index === -1) {
-    favorites.push(language);
-    alert(`${language} added to favorites!`);
+function toggleFavorite() {
+  const word = satWords[currentIndex].word;
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  if (!favorites.includes(word)) {
+    favorites.push(word);
+    alert(`⭐ ${word} added to favorites!`);
   } else {
-    favorites.splice(index, 1);
-    alert(`${language} removed from favorites.`);
+    alert(`${word} is already in favorites.`);
   }
-
-  localStorage.setItem('favoriteLanguages', JSON.stringify(favorites));
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  showSimilarWords();
 }
 
-function saveToHistory(wordData) {
-  const history = JSON.parse(localStorage.getItem('wordHistory')) || [];
-
-  // Only add if not already saved
-  const alreadyExists = history.some(item => item.word === wordData.word && item.language === wordData.language);
-  if (!alreadyExists) {
-    history.push(wordData);
-    localStorage.setItem('wordHistory', JSON.stringify(history));
-  }
+function getSimilarWords(word) {
+  //const aiSynonyms = {
+  //  "Loquacious": ["chatty", "garrulous", "verbose"],
+  //  "Ephemeral": ["brief", "transient", "fleeting"],
+  //  "Ubiquitous": ["everywhere", "omnipresent", "pervasive"]
+  //};
+  //return aiSynonyms[word] || [];
 }
 
-function showHistory() {
-  const container = document.getElementById('historyContainer');
-  const history = JSON.parse(localStorage.getItem('wordHistory')) || [];
-
-  if (history.length === 0) {
-    container.innerHTML = "<p>No words seen yet.</p>";
-  } else {
-    container.innerHTML = `<h3>Word History</h3><ul>${
-      history.map(word => `<li><strong>${word.word}</strong> (${word.language}): ${word.meaning}</li>`).join('')
-    }</ul>`;
-  }
-
-  container.style.display = 'block';
-
-  document.getElementById('closeHistoryButton').style.display = 'inline-block';
-  document.getElementById('clearHistoryButton').style.display = 'inline-block';
-  document.getElementById('clearFavoritesButton').style.display = 'none';
+function showSimilarWords() {
+  const word = satWords[currentIndex].word;
+  const similar = getSimilarWords(word);
+  const container = document.getElementById("similarWords");
+  container.innerHTML = similar.map(w => `<div class="word-card">${w}</div>`).join("");
 }
 
-function showFavorites() {
-  const container = document.getElementById('historyContainer');
-  const history = JSON.parse(localStorage.getItem('wordHistory')) || [];
-  const favorites = JSON.parse(localStorage.getItem('favoriteLanguages')) || [];
-
-  const filtered = history.filter(word => favorites.includes(word.language));
-
-  if (filtered.length === 0) {
-    container.innerHTML = "<p>No words from your favorite languages yet.</p>";
-  } else {
-    container.innerHTML = `<h3>Favorite Language Words</h3><ul>${
-      filtered.map(word => `<li><strong>${word.word}</strong> (${word.language}): ${word.meaning}</li>`).join('')
-    }</ul>`;
-  }
-
-  container.style.display = 'block';
-
-  document.getElementById('closeHistoryButton').style.display = 'inline-block';
-  document.getElementById('clearHistoryButton').style.display = 'none';
-  document.getElementById('clearFavoritesButton').style.display = 'inline-block';
+function updateHistoryBox() {
+  const box = document.getElementById("historyBox");
+  const stored = JSON.parse(localStorage.getItem("history")) || [];
+  box.innerHTML = `<strong>Seen Words:</strong><br><ul>${stored.map(w => `<li>${w}</li>`).join("")}</ul>`;
 }
 
-function closeHistory() {
-  document.getElementById('historyContainer').style.display = 'none';
-
-  // Hide close and clear buttons
-  document.getElementById('closeHistoryButton').style.display = 'none';
-  document.getElementById('clearHistoryButton').style.display = 'none';
-  document.getElementById('clearFavoritesButton').style.display = 'none';
+function toggleHistory() {
+  const box = document.getElementById("historyBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
 }
 
-function clearHistory() {
-  if (confirm('Are you sure you want to clear your word history?')) {
-    localStorage.removeItem('wordHistory');
-    closeHistory();
-    alert('Word history cleared.');
-  }
-}
-
-function clearFavorites() {
-  if (confirm('Are you sure you want to clear your favorite languages?')) {
-    localStorage.removeItem('favoriteLanguages');
-    closeHistory();
-    alert('Favorite languages cleared.');
-  }
-}
-
-async function suggestSimilarWords() {
-  const similarWordsDiv = document.getElementById("similarWords");
-  similarWordsDiv.innerHTML = "Loading suggestions...";
-
-  const prompt = `Give me 5 vocabulary words similar to "${currentWord}" in meaning or theme. Just return a comma-separated list.`;
-
-  try {
-    const response = await fetch("https://api.openai.com/v1/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer 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"
-      },
-      body: JSON.stringify({
-        model: "text-davinci-003",
-        prompt: prompt,
-        max_tokens: 60,
-        temperature: 0.7
-      })
-    });
-
-    const data = await response.json();
-    const words = data.choices[0].text.trim().split(/,\s*/);
-
-    similarWordsDiv.innerHTML = "";
-    words.forEach(word => {
-      const card = document.createElement("div");
-      card.className = "word-card";
-      card.textContent = word;
-      card.onclick = () => showNewWord(word);
-      similarWordsDiv.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error(err);
-    similarWordsDiv.innerHTML = "Error fetching suggestions.";
-  }
-}
-
+// Initialize
+history = JSON.parse(localStorage.getItem("history")) || [];
+displayCard(currentIndex);
