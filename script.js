@@ -1,4 +1,9 @@
+// TODO: DO NOT HARDCODE BEARER TOKEN. INSTEAD, MAKE SECURE PROXY BACKEND
+// https://chatgpt.com/share/688bbeee-7738-8004-8c0b-25801a8bbfcf
+
 let words = [];
+let currentWord = "";
+
 
 fetch('words.json')
   .then(response => response.json())
@@ -15,6 +20,7 @@ function getTodaysWord() {
 
 function displayWord() {
   const wordData = getTodaysWord();
+  currentWord = wordData.word;
   document.getElementById('cardFront').textContent = wordData.word;
   document.getElementById('cardBack').innerHTML = `
     <p><strong>Language:</strong> ${wordData.language}</p>
@@ -25,6 +31,25 @@ function displayWord() {
 
   saveToHistory(wordData);
 }
+
+function showNewWord(word) {
+  const found = words.find(w => w.word.toLowerCase() === word.toLowerCase());
+  if (found) {
+    document.getElementById('cardFront').textContent = found.word;
+    document.getElementById('cardBack').innerHTML = `
+      <p><strong>Language:</strong> ${found.language}</p>
+      <p><strong>Meaning:</strong> ${found.meaning}</p>
+      <button onclick="pronounceWord('${found.word}', '${found.language}')" class="speak-btn">🔊 Pronounce</button>
+      <button onclick="toggleFavorite('${found.language}')" class="favorite-btn">⭐ Favorite ${found.language}</button>
+    `;
+    currentWord = found.word;
+    saveToHistory(found);
+    unflipCard();
+  } else {
+    alert("Suggested word not found in your list.");
+  }
+}
+
 
 function flipCard() {
   const card = document.getElementById('cardInner');
@@ -151,3 +176,43 @@ function clearFavorites() {
     alert('Favorite languages cleared.');
   }
 }
+
+async function suggestSimilarWords() {
+  const similarWordsDiv = document.getElementById("similarWords");
+  similarWordsDiv.innerHTML = "Loading suggestions...";
+
+  const prompt = `Give me 5 vocabulary words similar to "${currentWord}" in meaning or theme. Just return a comma-separated list.`;
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer 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"
+      },
+      body: JSON.stringify({
+        model: "text-davinci-003",
+        prompt: prompt,
+        max_tokens: 60,
+        temperature: 0.7
+      })
+    });
+
+    const data = await response.json();
+    const words = data.choices[0].text.trim().split(/,\s*/);
+
+    similarWordsDiv.innerHTML = "";
+    words.forEach(word => {
+      const card = document.createElement("div");
+      card.className = "word-card";
+      card.textContent = word;
+      card.onclick = () => showNewWord(word);
+      similarWordsDiv.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    similarWordsDiv.innerHTML = "Error fetching suggestions.";
+  }
+}
+
