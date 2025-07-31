@@ -18,17 +18,26 @@
         <div class="card-back" id="cardBack"></div>
       </div>
     </div>
-
-    <div class="suggestions-container">
-  <button onclick="suggestSimilarWords()">Suggest Similar Words</button>
-  <div id="similarWords" class="similar-words"></div>
+    <div class="external-buttons">
+  <button id="externalSpeakBtn" class="speak-btn">🔊 Pronounce</button>
+  <button id="externalFavBtn" class="favorite-btn">⭐ Favorite</button>
 </div>
+
+
+<div class="left-buttons">
+  <div class="suggestions-container">
+    <button onclick="suggestSimilarWords()">Suggest Similar Words</button>
+    <div id="similarWords" class="similar-words"></div>
+  </div>
+
+  <button id="historyButton" onclick="showHistory()">📜 View Word History</button>
+  <button id="favoritesButton" onclick="showFavorites()">⭐ Show Favorite Languages</button>
+</div>
+
 
 
     <button id="resetButton" onclick="unflipCard()" style="display: none;">Reset 🔄</button>
 
-    <button id="historyButton" onclick="showHistory()">📜 View Word History</button>
-    <button id="favoritesButton" onclick="showFavorites()">⭐ Show Favorite Languages</button>
     <button id="closeHistoryButton" onclick="closeHistory()" style="display:none;">❌ Close Panel</button>
     <button id="clearHistoryButton" onclick="clearHistory()" style="display:none;">🗑 Clear History</button>
     <button id="clearFavoritesButton" onclick="clearFavorites()" style="display:none;">🗑 Clear Favorites</button>

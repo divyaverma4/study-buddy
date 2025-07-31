@@ -3,11 +3,11 @@
 body {
   background: linear-gradient(to right, #b4d8e7, #d4ebf2);
   font-family: 'Georgia', serif;
+  margin: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0;
-  height: 100vh;
 }
 
 .tabs {
@@ -25,6 +25,7 @@ body {
   cursor: pointer;
   font-weight: bold;
   border-radius: 1rem;
+  transition: background 0.3s ease;
 }
 
 .tab.active {
@@ -38,6 +39,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
+  gap: 1rem;
 }
 
 .flashcard {
@@ -45,6 +47,7 @@ body {
   height: 200px;
   perspective: 1000px;
   cursor: pointer;
+  padding:3rem;
 }
 
 .card-inner {
@@ -89,18 +92,26 @@ body {
   flex-direction: column;
 }
 
-#resetButton {
-  margin-top: 1rem;
-  background-color: #c7eaf2;
+button,
+#historyButton,
+#favoritesButton,
+#closeHistoryButton,
+#clearHistoryButton,
+#clearFavoritesButton {
   border: none;
-  padding: 0.7rem 1.5rem;
   border-radius: 1rem;
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  color: #064c5a;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   transition: background 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 0.5rem;
+}
+
+#resetButton {
+  background-color: #c7eaf2;
+  color: #064c5a;
 }
 
 #resetButton:hover {
@@ -108,16 +119,8 @@ body {
 }
 
 .speak-btn {
-  margin-top: 1rem;
   background-color: #b3e2f2;
-  border: none;
-  padding: 0.5rem 1.2rem;
-  border-radius: 1rem;
-  font-size: 1rem;
   color: #064c5a;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 .speak-btn:hover {
@@ -125,56 +128,36 @@ body {
 }
 
 .favorite-btn {
-  margin-top: 0.5rem;
   background-color: #fff4cc;
-  border: none;
-  padding: 0.5rem 1.2rem;
-  border-radius: 1rem;
-  font-size: 1rem;
   color: #6a4b00;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 .favorite-btn:hover {
   background-color: #ffeb99;
 }
 
-#historyButton, #favoritesButton {
-  margin-top: 0.5rem;
+#historyButton,
+#favoritesButton {
   background-color: #e4f6fc;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 1rem;
-  font-size: 1rem;
   color: #064c5a;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: background 0.3s ease;
 }
 
-#historyButton:hover, #favoritesButton:hover {
+#historyButton:hover,
+#favoritesButton:hover {
   background-color: #cbeaf6;
 }
 
-#closeHistoryButton, #clearHistoryButton, #clearFavoritesButton {
-  margin-top: 0.5rem;
+#closeHistoryButton,
+#clearHistoryButton,
+#clearFavoritesButton {
   background-color: #f8d7da;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  font-size: 1rem;
   color: #721c24;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: background 0.3s ease;
   margin-left: 0.5rem;
 }
 
-#closeHistoryButton:hover, #clearHistoryButton:hover, #clearFavoritesButton:hover {
+#closeHistoryButton:hover,
+#clearHistoryButton:hover,
+#clearFavoritesButton:hover {
   background-color: #f5c6cb;
 }
 
@@ -194,6 +177,18 @@ body {
 .suggestions-container {
   margin-top: 20px;
   text-align: center;
+}
+
+.left-buttons {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  z-index: 1000;
+  padding-top: 10rem;
 }
 
 .similar-words {
@@ -217,4 +212,3 @@ body {
 .similar-words .word-card:hover {
   transform: scale(1.05);
 }
-

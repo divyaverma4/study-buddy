@@ -22,15 +22,21 @@ function getTodaysWord() {
 function displayWord() {
   const wordData = getTodaysWord();
   currentWord = wordData.word;
+
   document.getElementById('cardFront').textContent = wordData.word;
   document.getElementById('cardBack').innerHTML = `
     <p><strong>Language:</strong> ${wordData.language}</p>
     <p><strong>Meaning:</strong> ${wordData.meaning}</p>
-    <button onclick="pronounceWord('${wordData.word}', '${wordData.language}')" class="speak-btn">🔊 Pronounce</button>
-    <button onclick="toggleFavorite('${wordData.language}')" class="favorite-btn">⭐ Favorite ${wordData.language}</button>
   `;
 
   saveToHistory(wordData);
+
+  // Update external buttons (optional)
+  const speakBtn = document.getElementById('externalSpeakBtn');
+  const favBtn = document.getElementById('externalFavBtn');
+
+  speakBtn.onclick = () => pronounceWord(wordData.word, wordData.language);
+  favBtn.onclick = () => toggleFavorite(wordData.language);
 }
 
 function showNewWord(word) {
