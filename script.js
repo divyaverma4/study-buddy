@@ -16,7 +16,7 @@ async function fetchWordData(word) {
   }
 
   try {
-    const res = await fetch(`${PROXY_API_BASE}/${word}`);
+    const res = await fetch(`${PROXY_API_BASE}/api/word/${word}`);
     const data = await res.json();
 
     const wordObj = {
@@ -142,3 +142,39 @@ window.onload = () => {
     flashcard.addEventListener('click', flipCard);
   }
 };
+
+async function fetchWordData(word) {
+  console.log(`Fetching word: ${word}`);
+  console.log(`Requesting: ${PROXY_API_BASE}/api/word/${word}`);
+
+  const cache = JSON.parse(localStorage.getItem("wordDataCache")) || {};
+  if (cache[word]) {
+    console.log(`Cache hit for: ${word}`);
+    return cache[word];
+  }
+
+  try {
+    const res = await fetch(`${PROXY_API_BASE}/api/word/${word}`);
+    console.log(`Response status: ${res.status}`);
+
+    const data = await res.json();
+    console.log(`API Response for ${word}:`, data);
+
+    const wordObj = {
+      word: word,
+      definition: data.definitions?.[0]?.definition || "No definition found.",
+      sentence: data.definitions?.[0]?.example || "No example found."
+    };
+
+    cache[word] = wordObj;
+    localStorage.setItem("wordDataCache", JSON.stringify(cache));
+    return wordObj;
+  } catch (err) {
+    console.error(`Error fetching data for ${word}:`, err);
+    return {
+      word: word,
+      definition: "Definition unavailable.",
+      sentence: "Example unavailable."
+    };
+  }
+}
