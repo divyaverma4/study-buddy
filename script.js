@@ -202,3 +202,62 @@ function getQuizPool() {
   return pool;
 }
 
+
+async function fetchQuizQuestion(word) {
+  try {
+    const res = await fetch(`${PROXY_API_BASE}/api/quiz/${word}`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch quiz for ${word}: ${res.statusText}`);
+    }
+    const quizData = await res.json();
+    return quizData;
+  } catch (error) {
+    console.error("Error fetching quiz question:", error);
+    return null;
+  }
+}
+
+async function startQuiz() {
+  const pool = getQuizPool();
+  if (pool.length === 0) {
+    alert("No favorited words to quiz on.");
+    return;
+  }
+
+  const randomWord = pool[Math.floor(Math.random() * pool.length)];
+  const quiz = await fetchQuizQuestion(randomWord);
+
+  if (!quiz) {
+    alert("Failed to load quiz question.");
+    return;
+  }
+
+  renderQuizQuestion(quiz);
+}
+
+function renderQuizQuestion(quiz) {
+  const quizContainer = document.getElementById('quizContainer');
+  quizContainer.innerHTML = `
+    <div class="quiz-question">${quiz.question}</div>
+    <div class="quiz-options">
+      ${Object.entries(quiz.options).map(([letter, option]) => `
+        <button onclick="checkAnswer('${letter}', '${quiz.correctAnswer}')">${letter}: ${option}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function checkAnswer(selected, correct) {
+  if (selected === correct) {
+    alert("✅ Correct!");
+  } else {
+    alert(`❌ Incorrect. The correct answer is ${correct}.`);
+  }
+}
+
+function showQuizSection() {
+  document.getElementById('quizSection').style.display = 'block';
+  document.getElementById('practiceQuizBtn').style.display = 'none'; // Hide the button after starting
+  startQuiz();
+}
+

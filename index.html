@@ -18,7 +18,14 @@
       <h3>AI-Study Bot</h3>
       <div class="similar-words" id="similarWords"></div>
     </div>
-  </div>
+    <!-- Practice Quiz Button -->
+<button id="practiceQuizBtn" onclick="showQuizSection()">Practice Quiz</button>
+
+<!-- Quiz Section (hidden initially) -->
+<div id="quizSection" style="display: none;">
+  <div id="quizContainer"></div>
+  <button id="nextQuizBtn" onclick="startQuiz()">Next Question</button>
+</div>
 
   <div class="container">
     <div class="flashcard" onclick="flipCard()">
