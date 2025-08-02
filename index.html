@@ -14,15 +14,7 @@
   <div class="left-buttons">
     <button class="favorite-btn" onclick="toggleFavorite()">⭐ Needs Practice </button>
     <button id="historyButton" onclick="toggleHistory()">🕘 View History</button>
-    <div class="suggestions-container">
-      <h3>AI-Study Bot</h3>
       <button id="practiceQuizBtn" onclick="showQuizSection()">Practice Quiz</button>
-      <!-- Quiz Section (hidden initially) -->
-      <div id="quizSection" style="display: none;">
-      <div id="quizContainer"></div>
-      <button id="nextQuizBtn" onclick="startQuiz()">Next Question</button>
-      <button id="exitQuizBtn" onclick="exitQuiz()">Exit Quiz</button>
-    </div>
   </div>
 
 
@@ -36,6 +28,13 @@
     </div>
     <button id="nextBtn" onclick="showNextCard()">Next Word ➡️</button>
 
+    <!-- Quiz Section (hidden initially) -->
+      <div id="quizSection" style="display: none;">
+      <div id="quizContainer"></div>
+      <button id="nextQuizBtn" onclick="startQuiz()">Next Question</button>
+      <button id="exitQuizBtn" onclick="exitQuiz()">Exit Quiz</button>
+    </div>
+    
     <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>
 
