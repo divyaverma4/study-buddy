@@ -1,38 +1,35 @@
-// TODO: FIX CALL TO API SO THAT IT HITS PROPERLY
-// INTEGRATE AI SOMEHOW
+// script.js
 
 let currentIndex = 0;
 let flipped = false;
 let history = [];
-
-const apiKey = WORDS_API_KEY; // Replace with your actual key
-const wordList = ["ephemeral", "loquacious", "ubiquitous"]; // Expand this as needed
 let satWords = [];
 
+const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; // <-- Replace with your Render proxy URL
+const wordList = ["ephemeral", "loquacious", "ubiquitous"]; // Add more words here if you want
+
+// Fetch word data via your proxy, with caching in localStorage
 async function fetchWordData(word) {
-  const cached = JSON.parse(localStorage.getItem("wordDataCache")) || {};
-  if (cached[word]) {
-    return cached[word];
+  const cache = JSON.parse(localStorage.getItem("wordDataCache")) || {};
+  if (cache[word]) {
+    return cache[word];
   }
 
   try {
-    const res = await fetch(`https://wordsapiv1.p.rapidapi.com/words/${word}`, {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Host": "wordsapiv1.p.rapidapi.com",
-        "X-RapidAPI-Key": apiKey
-      }
-    });
+    const res = await fetch(`${PROXY_API_BASE}/${word}`);
     const data = await res.json();
+
     const wordObj = {
       word: word,
       definition: data.results?.[0]?.definition || "No definition found.",
       sentence: data.results?.[0]?.examples?.[0] || "No example found."
     };
-    cached[word] = wordObj;
-    localStorage.setItem("wordDataCache", JSON.stringify(cached));
+
+    cache[word] = wordObj;
+    localStorage.setItem("wordDataCache", JSON.stringify(cache));
     return wordObj;
-  } catch (e) {
+  } catch (err) {
+    console.error(`Error fetching data for ${word}:`, err);
     return {
       word: word,
       definition: "Definition unavailable.",
@@ -41,19 +38,17 @@ async function fetchWordData(word) {
   }
 }
 
+// Initialize all words data
 async function initWords() {
   const promises = wordList.map(fetchWordData);
   satWords = await Promise.all(promises);
   history = JSON.parse(localStorage.getItem("history")) || [];
   displayCard(currentIndex);
+  showSimilarWords();
+  updateHistoryBox();
 }
 
-initWords();
-
-
-
-
-
+// Show the current card content
 function displayCard(index) {
   const wordObj = satWords[index];
   document.getElementById('cardFront').textContent = wordObj.word;
@@ -65,7 +60,7 @@ function displayCard(index) {
   document.getElementById('cardInner').classList.remove('flipped');
   flipped = false;
 
-  // Add to history if not already included
+  // Update history
   if (!history.includes(wordObj.word)) {
     history.push(wordObj.word);
     localStorage.setItem("history", JSON.stringify(history));
@@ -73,18 +68,21 @@ function displayCard(index) {
   updateHistoryBox();
 }
 
+// Flip the card front/back
 function flipCard() {
   const card = document.getElementById('cardInner');
   card.classList.toggle('flipped');
   flipped = !flipped;
 }
 
+// Show next word card
 function showNextCard() {
   currentIndex = (currentIndex + 1) % satWords.length;
   displayCard(currentIndex);
   showSimilarWords();
 }
 
+// Add or remove favorite
 function toggleFavorite() {
   const word = satWords[currentIndex].word;
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -98,33 +96,49 @@ function toggleFavorite() {
   showSimilarWords();
 }
 
+// Simple AI-simulated similar words
 function getSimilarWords(word) {
-  //const aiSynonyms = {
-  //  "Loquacious": ["chatty", "garrulous", "verbose"],
-  //  "Ephemeral": ["brief", "transient", "fleeting"],
-  //  "Ubiquitous": ["everywhere", "omnipresent", "pervasive"]
-  //};
-  //return aiSynonyms[word] || [];
+  const aiSynonyms = {
+    "loquacious": ["chatty", "garrulous", "verbose"],
+    "ephemeral": ["brief", "transient", "fleeting"],
+    "ubiquitous": ["everywhere", "omnipresent", "pervasive"]
+  };
+  return aiSynonyms[word.toLowerCase()] || [];
 }
 
+// Display similar words container
 function showSimilarWords() {
   const word = satWords[currentIndex].word;
   const similar = getSimilarWords(word);
   const container = document.getElementById("similarWords");
-  container.innerHTML = similar.map(w => `<div class="word-card">${w}</div>`).join("");
+  container.innerHTML = similar.length
+    ? similar.map(w => `<div class="word-card">${w}</div>`).join("")
+    : "<em>No similar words found.</em>";
 }
 
+// Update the history box content
 function updateHistoryBox() {
   const box = document.getElementById("historyBox");
-  const stored = JSON.parse(localStorage.getItem("history")) || [];
-  box.innerHTML = `<strong>Seen Words:</strong><br><ul>${stored.map(w => `<li>${w}</li>`).join("")}</ul>`;
+  if (history.length === 0) {
+    box.innerHTML = "<em>No words viewed yet.</em>";
+    return;
+  }
+  box.innerHTML = `<strong>Seen Words:</strong><br><ul>${history.map(w => `<li>${w}</li>`).join("")}</ul>`;
 }
 
+// Toggle history box visibility
 function toggleHistory() {
   const box = document.getElementById("historyBox");
   box.style.display = box.style.display === "none" ? "block" : "none";
 }
 
-// Initialize
-history = JSON.parse(localStorage.getItem("history")) || [];
-displayCard(currentIndex);
+// Initialize app on page load
+window.onload = () => {
+  initWords();
+
+  // Optional: hook flipCard to card click (if not already in your HTML)
+  const flashcard = document.querySelector('.flashcard');
+  if (flashcard) {
+    flashcard.addEventListener('click', flipCard);
+  }
+};

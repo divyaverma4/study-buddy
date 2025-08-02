@@ -20,7 +20,7 @@
   <div class="container">
     <div class="flashcard" onclick="flipCard()">
       <div class="card-inner" id="cardInner">
-        <div class="card-front" id="cardFront"></div>
+        <div class="card-front" id="cardFront">Click "Next Word" to begin!</div>
         <div class="card-back" id="cardBack"></div>
       </div>
     </div>
@@ -33,6 +33,9 @@
     <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>
 
+  <script>
+    const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; // <-- Replace this with your actual Render URL
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
