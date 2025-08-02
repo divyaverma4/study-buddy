@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SAT Vocabulary Flashcards</title>
+  <title>Study Buddy</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="tabs">
-    <div class="tab active">Words Around the World</div>
+    <div class="tab active">Study Buddy</div>
   </div>
 
   <div class="left-buttons">
     <button class="favorite-btn" onclick="toggleFavorite()">⭐ Needs Practice </button>
-    <button id="historyButton" onclick="toggleHistory()">🕘 View History</button>
-      <button id="practiceQuizBtn" onclick="showQuizSection()">Practice Quiz</button>
+    <button id="toggleHistoryBtn" onclick="toggleHistory()">Show History</button>
+    <button id="practiceQuizBtn" onclick="showQuizSection()">Practice Quiz</button>
   </div>
 
 
@@ -34,7 +34,7 @@
       <button id="nextQuizBtn" onclick="startQuiz()">Next Question</button>
       <button id="exitQuizBtn" onclick="exitQuiz()">Exit Quiz</button>
     </div>
-    
+
     <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>
 

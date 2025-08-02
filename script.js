@@ -1,11 +1,10 @@
-// script.js
-
 let currentIndex = 0;
 let flipped = false;
 let history = [];
 let satWords = [];
 
-//const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; // <-- Replace with your Render proxy URL
+const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com';
+
 const wordList = ["abase", "abate", "abdicate", "abduct", "aberration", "abet",
   "abhor", "abide", "abject", "abjure", "abnegation", "abort",
   "abridge", "abrogate", "abscond", "absolution", "abstain",
@@ -16,9 +15,16 @@ const wordList = ["abase", "abate", "abdicate", "abduct", "aberration", "abet",
   "adumbrate", "adverse", "advocate", "aggrandize", "aggregate",
   "allay", "allege", "alleviate", "allocate", "aloof", "altercation"
 ];
-; // ADD MORE WORDS
 
-// Fetch word data via your proxy, with caching in localStorage
+// Shuffle Array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// Fetch word data via proxy with caching
 async function fetchWordData(word) {
   const cache = JSON.parse(localStorage.getItem("wordDataCache")) || {};
   if (cache[word]) {
@@ -41,35 +47,35 @@ async function fetchWordData(word) {
     console.error(`Error fetching data for ${word}:`, err);
     return {
       word: word,
-      definition: "Definition unavailable.",
-      sentence: "Example unavailable."
+      definition: "Definition unavailable."
     };
   }
 }
 
-// Initialize all words data
+// Initialize Words (Shuffle + Fetch + Load History)
 async function initWords() {
+  shuffleArray(wordList); // Shuffle on every load
   const promises = wordList.map(fetchWordData);
   satWords = await Promise.all(promises);
+
   history = JSON.parse(localStorage.getItem("history")) || [];
+  currentIndex = 0;
   displayCard(currentIndex);
   showSimilarWords();
   updateHistoryBox();
 }
 
-// Show the current card content
+// Display current word card
 function displayCard(index) {
   const wordObj = satWords[index];
   document.getElementById('cardFront').textContent = wordObj.word;
   document.getElementById('cardBack').innerHTML = `
     <strong>${wordObj.word}</strong><br>
     <em>${wordObj.definition}</em><br><br>
-    <span>"${wordObj.sentence}"</span>
   `;
   document.getElementById('cardInner').classList.remove('flipped');
   flipped = false;
 
-  // Update history
   if (!history.includes(wordObj.word)) {
     history.push(wordObj.word);
     localStorage.setItem("history", JSON.stringify(history));
@@ -77,21 +83,21 @@ function displayCard(index) {
   updateHistoryBox();
 }
 
-// Flip the card front/back
+// Flip Card
 function flipCard() {
   const card = document.getElementById('cardInner');
   card.classList.toggle('flipped');
   flipped = !flipped;
 }
 
-// Show next word card
+// Next Card
 function showNextCard() {
   currentIndex = (currentIndex + 1) % satWords.length;
   displayCard(currentIndex);
   showSimilarWords();
 }
 
-// Add or remove favorite
+// Toggle Favorite
 function toggleFavorite() {
   const word = satWords[currentIndex].word;
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -105,27 +111,7 @@ function toggleFavorite() {
   showSimilarWords();
 }
 
-// Simple AI-simulated similar words
-function getSimilarWords(word) {
-  const aiSynonyms = {
-    "loquacious": ["chatty", "garrulous", "verbose"],
-    "ephemeral": ["brief", "transient", "fleeting"],
-    "ubiquitous": ["everywhere", "omnipresent", "pervasive"]
-  };
-  return aiSynonyms[word.toLowerCase()] || [];
-}
-
-// Display similar words container
-function showSimilarWords() {
-  const word = satWords[currentIndex].word;
-  const similar = getSimilarWords(word);
-  const container = document.getElementById("similarWords");
-  container.innerHTML = similar.length
-    ? similar.map(w => `<div class="word-card">${w}</div>`).join("")
-    : "<em>No similar words found.</em>";
-}
-
-// Update the history box content
+// Update History Box
 function updateHistoryBox() {
   const box = document.getElementById("historyBox");
   if (history.length === 0) {
@@ -135,59 +121,36 @@ function updateHistoryBox() {
   box.innerHTML = `<strong>Seen Words:</strong><br><ul>${history.map(w => `<li>${w}</li>`).join("")}</ul>`;
 }
 
-// Toggle history box visibility
+// Toggle History Button Text and Visibility
 function toggleHistory() {
   const box = document.getElementById("historyBox");
-  box.style.display = box.style.display === "none" ? "block" : "none";
-}
+  const btn = document.getElementById("toggleHistoryBtn");
 
-// Initialize app on page load
-window.onload = () => {
-  initWords();
-
-  // Optional: hook flipCard to card click (if not already in your HTML)
-  //const flashcard = document.querySelector('.flashcard');
-  //if (flashcard) {
-  //  flashcard.addEventListener('click', flipCard);
-  //}
-};
-
-async function fetchWordData(word) {
-  console.log(`Fetching word: ${word}`);
-  console.log(`Requesting: ${PROXY_API_BASE}/api/word/${word}`);
-
-  const cache = JSON.parse(localStorage.getItem("wordDataCache")) || {};
-  if (cache[word]) {
-    console.log(`Cache hit for: ${word}`);
-    return cache[word];
-  }
-
-  try {
-    const res = await fetch(`${PROXY_API_BASE}/api/word/${word}`);
-    console.log(`Response status: ${res.status}`);
-
-    const data = await res.json();
-    console.log(`API Response for ${word}:`, data);
-
-    const wordObj = {
-      word: word,
-      definition: data.definitions?.[0]?.definition || "No definition found.",
-      sentence: data.definitions?.[0]?.example || "No example found."
-    };
-
-    cache[word] = wordObj;
-    localStorage.setItem("wordDataCache", JSON.stringify(cache));
-    return wordObj;
-  } catch (err) {
-    console.error(`Error fetching data for ${word}:`, err);
-    return {
-      word: word,
-      definition: "Definition unavailable.",
-      sentence: "Example unavailable."
-    };
+  if (box.style.display === "none" || box.style.display === "") {
+    box.style.display = "block";
+    btn.textContent = "Close History";
+  } else {
+    box.style.display = "none";
+    btn.textContent = "Show History";
   }
 }
 
+// Optional: Shuffle & Restart Button
+function reshuffleAndRestart() {
+  shuffleArray(satWords);
+  currentIndex = 0;
+  history = [];
+  localStorage.setItem("history", JSON.stringify(history));
+  displayCard(currentIndex);
+  updateHistoryBox();
+}
+
+// Placeholder for similar words logic
+function showSimilarWords() {
+  // Implement your similar words logic here.
+}
+
+// Quiz Functions (unchanged)
 function getQuizPool() {
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
   let pool = [...favorites];
@@ -197,20 +160,15 @@ function getQuizPool() {
     pool = pool.concat(similar);
   });
 
-  // Remove duplicates
   pool = [...new Set(pool)];
   return pool;
 }
 
-
 async function fetchQuizQuestion(word) {
   try {
     const res = await fetch(`${PROXY_API_BASE}/api/quiz/${word}`);
-    if (!res.ok) {
-      throw new Error(`Failed to fetch quiz for ${word}: ${res.statusText}`);
-    }
-    const quizData = await res.json();
-    return quizData;
+    if (!res.ok) throw new Error(`Failed to fetch quiz for ${word}: ${res.statusText}`);
+    return await res.json();
   } catch (error) {
     console.error("Error fetching quiz question:", error);
     return null;
@@ -257,11 +215,6 @@ function checkAnswer(selected, correct) {
 
 function showQuizSection() {
   document.getElementById('quizSection').style.display = 'block';
-  document.getElementById('practiceQuizBtn').style.display = 'none'; // Hide the button after starting
-  startQuiz();
-}
-function showQuizSection() {
-  document.getElementById('quizSection').style.display = 'block';
   document.getElementById('practiceQuizBtn').style.display = 'none';
   startQuiz();
 }
@@ -271,3 +224,7 @@ function exitQuiz() {
   document.getElementById('practiceQuizBtn').style.display = 'inline-block';
 }
 
+// Initialize on Load
+window.onload = () => {
+  initWords();
+};
