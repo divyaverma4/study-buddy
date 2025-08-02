@@ -5,8 +5,18 @@ let flipped = false;
 let history = [];
 let satWords = [];
 
-const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; // <-- Replace with your Render proxy URL
-const wordList = ["ephemeral", "loquacious", "ubiquitous"]; // Add more words here if you want
+//const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; // <-- Replace with your Render proxy URL
+const wordList = ["abase", "abate", "abdicate", "abduct", "aberration", "abet",
+  "abhor", "abide", "abject", "abjure", "abnegation", "abort",
+  "abridge", "abrogate", "abscond", "absolution", "abstain",
+  "abstruse", "accede", "accentuate", "accessible", "acclaim",
+  "accolade", "accommodating", "accord", "accost", "accretion",
+  "acerbic", "acquiesce", "acrimony", "acumen", "acute", "adamant",
+  "adept", "adhere", "admonish", "adorn", "adroit", "adulation",
+  "adumbrate", "adverse", "advocate", "aggrandize", "aggregate",
+  "allay", "allege", "alleviate", "allocate", "aloof", "altercation"
+];
+; // ADD MORE WORDS
 
 // Fetch word data via your proxy, with caching in localStorage
 async function fetchWordData(word) {
@@ -21,8 +31,7 @@ async function fetchWordData(word) {
 
     const wordObj = {
       word: word,
-      definition: data.results?.[0]?.definition || "No definition found.",
-      sentence: data.results?.[0]?.examples?.[0] || "No example found."
+      definition: data.results?.[0]?.definition || "No definition found."
     };
 
     cache[word] = wordObj;
@@ -137,10 +146,10 @@ window.onload = () => {
   initWords();
 
   // Optional: hook flipCard to card click (if not already in your HTML)
-  const flashcard = document.querySelector('.flashcard');
-  if (flashcard) {
-    flashcard.addEventListener('click', flipCard);
-  }
+  //const flashcard = document.querySelector('.flashcard');
+  //if (flashcard) {
+  //  flashcard.addEventListener('click', flipCard);
+  //}
 };
 
 async function fetchWordData(word) {
