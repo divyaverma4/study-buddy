@@ -260,4 +260,14 @@ function showQuizSection() {
   document.getElementById('practiceQuizBtn').style.display = 'none'; // Hide the button after starting
   startQuiz();
 }
+function showQuizSection() {
+  document.getElementById('quizSection').style.display = 'block';
+  document.getElementById('practiceQuizBtn').style.display = 'none';
+  startQuiz();
+}
+
+function exitQuiz() {
+  document.getElementById('quizSection').style.display = 'none';
+  document.getElementById('practiceQuizBtn').style.display = 'inline-block';
+}
 
