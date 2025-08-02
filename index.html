@@ -8,33 +8,32 @@
 </head>
 <body>
   <div class="tabs">
-    <div class="tab active">SAT Vocabulary Flashcards</div>
+    <div class="tab active">Words Around the World</div>
   </div>
 
   <div class="left-buttons">
-    <button class="favorite-btn" onclick="toggleFavorite()">⭐ Favorite</button>
-    <button id="nextBtn" onclick="showNextCard()">Next Word ➡️</button>
+    <button class="favorite-btn" onclick="toggleFavorite()">⭐ Favorite Language</button>
     <button id="historyButton" onclick="toggleHistory()">🕘 View History</button>
+    <div class="suggestions-container">
+      <h3>AI-Suggested Similar Words</h3>
+      <div class="similar-words" id="similarWords"></div>
+    </div>
   </div>
 
   <div class="container">
     <div class="flashcard" onclick="flipCard()">
       <div class="card-inner" id="cardInner">
-        <div class="card-front" id="cardFront">Click "Next Word" to begin!</div>
+        <div class="card-front" id="cardFront"> </div>
         <div class="card-back" id="cardBack"></div>
       </div>
     </div>
-
-    <div class="suggestions-container">
-      <h3>AI-Suggested Similar Words</h3>
-      <div class="similar-words" id="similarWords"></div>
-    </div>
+    <button id="nextBtn" onclick="showNextCard()">Next Word ➡️</button>
 
     <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>
 
   <script>
-    const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; // <-- Replace this with your actual Render URL
+    const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; 
   </script>
   <script src="script.js"></script>
 </body>

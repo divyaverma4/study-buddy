@@ -128,7 +128,7 @@ button:hover {
 
 .left-buttons {
   position: fixed;
-  top: 1rem;
+  top: 12rem;
   left: 1rem;
   display: flex;
   flex-direction: column;
@@ -149,5 +149,11 @@ button:hover {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   font-family: "Markazi Text", serif;
   display: none;
+}
+
+.nextBtn {
+  position: static; /* removes fixed positioning */
+  top: 20rem; /* space from elements above */
+  display: inline-block;
 }
 
