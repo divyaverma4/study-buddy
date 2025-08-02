@@ -187,3 +187,18 @@ async function fetchWordData(word) {
     };
   }
 }
+
+function getQuizPool() {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  let pool = [...favorites];
+
+  favorites.forEach(word => {
+    const similar = getSimilarWords(word);
+    pool = pool.concat(similar);
+  });
+
+  // Remove duplicates
+  pool = [...new Set(pool)];
+  return pool;
+}
+
