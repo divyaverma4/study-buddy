@@ -29,7 +29,10 @@ body {
   justify-content: center;
   gap: 1rem;
   padding: 1rem;
+
+  margin-left: 220px; /* make room so left-buttons don’t cover the container */
 }
+
 
 .flashcard {
   width: 350px;
@@ -151,9 +154,10 @@ button:hover {
   display: none;
 }
 
-.nextBtn {
-  position: static; /* removes fixed positioning */
-  top: 20rem; /* space from elements above */
-  display: inline-block;
+#nextBtn {
+  margin-top: 2rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  cursor: pointer;
 }
-
