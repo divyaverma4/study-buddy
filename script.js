@@ -31,43 +31,65 @@ async function fetchWordData(word) {
   if (cache[word]) {
     console.log(`[CACHE HIT] Returning cached data for "${word}"`);
     return cache[word];
+  } else {
+    console.log(`[CACHE MISS] No cached data for "${word}", fetching from API...`);
   }
 
   try {
-    console.log(`[FETCH] Fetching data for word: "${word}"`);
     const res = await fetch(`${PROXY_API_BASE}/api/word/${word}`);
     if (!res.ok) {
-      console.error(`[ERROR] Failed to fetch "${word}", status: ${res.status}`);
+      console.error(`[FETCH ERROR] Failed to fetch "${word}", status: ${res.status}`);
       return { word, definition: "Definition unavailable due to fetch error." };
     }
     const data = await res.json();
 
+    if (!data.results || data.results.length === 0) {
+      console.warn(`[FETCH WARNING] No definition found for "${word}" in API response`);
+      return { word, definition: "No definition found." };
+    }
+
     const wordObj = {
-      word: word,
-      definition: data.results?.[0]?.definition || "No definition found."
+      word,
+      definition: data.results[0].definition,
     };
 
+    // Cache the fetched word object
     cache[word] = wordObj;
     localStorage.setItem("wordDataCache", JSON.stringify(cache));
-    console.log(`[FETCH SUCCESS] Data for "${word}" cached`);
+    console.log(`[FETCH SUCCESS] Cached definition for "${word}"`);
     return wordObj;
   } catch (err) {
-    console.error(`[ERROR] Exception fetching data for "${word}":`, err);
+    console.error(`[FETCH EXCEPTION] Exception fetching "${word}":`, err);
     return {
-      word: word,
-      definition: "Definition unavailable due to exception."
+      word,
+      definition: "Definition unavailable due to network or server error.",
     };
   }
 }
 
-// Initialize Words (Shuffle + Fetch + Load History)
 async function initWords() {
-  console.log("[INIT] Initializing words...");
-  shuffleArray(wordList);
+  console.log("[INIT] Fetching SAT/ACT vocab list from API...");
   try {
-    const promises = wordList.map(fetchWordData);
+    // Step 1: Fetch the word list from your server
+    const listRes = await fetch(`${PROXY_API_BASE}/api/vocab-list`);
+    if (!listRes.ok) {
+      throw new Error(`Failed to fetch vocab list, status: ${listRes.status}`);
+    }
+    const listData = await listRes.json();
+    const wordsFromAPI = listData.words;
+    if (!Array.isArray(wordsFromAPI) || wordsFromAPI.length === 0) {
+      throw new Error("Received empty or invalid word list from API");
+    }
+    console.log(`[INIT] Received ${wordsFromAPI.length} words from API.`);
+
+    // Step 2: Shuffle the list
+    shuffleArray(wordsFromAPI);
+
+    // Step 3: Fetch definitions for each word (with caching)
+    const promises = wordsFromAPI.map(fetchWordData);
     satWords = await Promise.all(promises);
-    console.log(`[INIT] Words fetched, total: ${satWords.length}`);
+    console.log(`[INIT] Word definitions fetched, total: ${satWords.length}`);
+
   } catch (e) {
     console.error("[ERROR] initWords failed:", e);
     satWords = [];
@@ -86,6 +108,7 @@ async function initWords() {
   updateHistoryBox();
 }
 
+
 // Display current word card
 function displayCard(index) {
   console.log(`[DISPLAY] Showing card index: ${index}`);
@@ -103,8 +126,6 @@ function displayCard(index) {
     return;
   }
 
-  console.log(`[DISPLAY] Word: ${wordObj.word}, Definition: ${wordObj.definition}`);
-
   const frontEl = document.getElementById('cardFront');
   const backEl = document.getElementById('cardBack');
   const innerEl = document.getElementById('cardInner');
@@ -115,7 +136,7 @@ function displayCard(index) {
   }
 
   frontEl.textContent = wordObj.word;
-  backEl.innerHTML = `<strong>${wordObj.word}</strong><br><em>${wordObj.definition}</em><br><br>`;
+  backEl.innerHTML = `<strong>${wordObj.word}</strong><br><em>${wordObj.definition || "Definition unavailable."}</em><br><br>`;
   innerEl.classList.remove('flipped');
   flipped = false;
 
