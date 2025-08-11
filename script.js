@@ -85,9 +85,21 @@ async function initWords() {
     // Step 2: Shuffle the list
     shuffleArray(wordsFromAPI);
 
-    // Step 3: Fetch definitions for each word (with caching)
-    const promises = wordsFromAPI.map(fetchWordData);
-    satWords = await Promise.all(promises);
+    // Step 3: Fetch definitions **sequentially** with progressive UI update
+    satWords = [];
+    for (const [i, word] of wordsFromAPI.entries()) {
+      const wordData = await fetchWordData(word);
+      satWords.push(wordData);
+
+      // Show the first word immediately after first fetch
+      if (i === 0) {
+        displayCard(0);
+        showSimilarWords();
+      }
+
+      // Optional: you can update other UI elements progressively here if you want
+      console.log(`[INIT] Fetched definition ${i + 1}/${wordsFromAPI.length}`);
+    }
     console.log(`[INIT] Word definitions fetched, total: ${satWords.length}`);
 
   } catch (e) {
@@ -98,15 +110,16 @@ async function initWords() {
   history = JSON.parse(localStorage.getItem("history")) || [];
   currentIndex = 0;
 
-  if (satWords.length > 0) {
+  if (satWords.length > 0 && currentIndex !== 0) {
     displayCard(currentIndex);
     showSimilarWords();
-  } else {
+  } else if (satWords.length === 0) {
     console.warn("[WARNING] No words fetched, showing fallback card");
     displayFallbackCard();
   }
   updateHistoryBox();
 }
+
 
 
 // Display current word card
