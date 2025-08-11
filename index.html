@@ -17,8 +17,6 @@
     <button id="practiceQuizBtn" onclick="showQuizSection()">Practice Quiz</button>
   </div>
 
-
-
   <div class="container">
     <div class="flashcard" onclick="flipCard()">
       <div class="card-inner" id="cardInner">
@@ -29,7 +27,7 @@
     <button id="nextBtn" onclick="showNextCard()">Next Word ➡️</button>
 
     <!-- Quiz Section (hidden initially) -->
-      <div id="quizSection" style="display: none;">
+    <div id="quizSection" style="display: none;">
       <div id="quizContainer"></div>
       <button id="nextQuizBtn" onclick="startQuiz()">Next Question</button>
       <button id="exitQuizBtn" onclick="exitQuiz()">Exit Quiz</button>
@@ -38,9 +36,7 @@
     <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>
 
-  <script>
-    const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com'; 
-  </script>
+  <!-- ONLY load script.js ONCE, NO inline script defining PROXY_API_BASE -->
   <script src="script.js"></script>
 </body>
 </html>

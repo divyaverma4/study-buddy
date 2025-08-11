@@ -217,6 +217,37 @@ function toggleHistory() {
   }
 }
 
+// Placeholder for similar words
+function showSimilarWords() {
+  // Implement your logic here or leave empty for now
+}
+
+// Quiz-related functions (just stubs here)
+function showQuizSection() {
+  document.getElementById('quizSection').style.display = 'block';
+  document.getElementById('practiceQuizBtn').style.display = 'none';
+  // Implement your quiz start logic here if needed
+}
+
+function startQuiz() {
+  // Your existing quiz start logic here
+  console.log("Starting quiz (not implemented here)");
+}
+
+function exitQuiz() {
+  document.getElementById('quizSection').style.display = 'none';
+  document.getElementById('practiceQuizBtn').style.display = 'inline-block';
+}
+
+// --- Export functions globally for inline onclick handlers ---
+window.toggleFavorite = toggleFavorite;
+window.toggleHistory = toggleHistory;
+window.showQuizSection = showQuizSection;
+window.flipCard = flipCard;
+window.showNextCard = showNextCard;
+window.startQuiz = startQuiz;
+window.exitQuiz = exitQuiz;
+
 // Initialize on Load
 window.onload = async () => {
   console.log("[WINDOW LOAD] Starting app initialization...");
