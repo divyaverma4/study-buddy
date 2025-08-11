@@ -71,7 +71,7 @@ async function initWords() {
   console.log("[INIT] Fetching SAT/ACT vocab list from API...");
   try {
     // Step 1: Fetch the word list from your server
-    const listRes = await fetch(`${PROXY_API_BASE}/api/vocab-list`);
+    const listRes = await fetch(`${PROXY_API_BASE}/api/vocab`);
     if (!listRes.ok) {
       throw new Error(`Failed to fetch vocab list, status: ${listRes.status}`);
     }
