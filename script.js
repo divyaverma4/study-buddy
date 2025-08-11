@@ -43,29 +43,32 @@ async function fetchWordData(word) {
     }
     const data = await res.json();
 
-    if (!data.results || data.results.length === 0) {
-      console.warn(`[FETCH WARNING] No definition found for "${word}" in API response`);
-      return { word, definition: "No definition found." };
+    // Handle OpenAI style response (has "word" and "definition" directly)
+    if (data.word && data.definition) {
+      const wordObj = { word: data.word, definition: data.definition };
+      cache[word] = wordObj;
+      localStorage.setItem("wordDataCache", JSON.stringify(cache));
+      console.log(`[FETCH SUCCESS] Cached definition for "${word}"`);
+      return wordObj;
     }
 
-    const wordObj = {
-      word,
-      definition: data.results[0].definition,
-    };
+    // Fallback for WordsAPI style (has results array)
+    if (data.results && data.results.length > 0) {
+      const wordObj = { word, definition: data.results[0].definition };
+      cache[word] = wordObj;
+      localStorage.setItem("wordDataCache", JSON.stringify(cache));
+      console.log(`[FETCH SUCCESS] Cached definition for "${word}"`);
+      return wordObj;
+    }
 
-    // Cache the fetched word object
-    cache[word] = wordObj;
-    localStorage.setItem("wordDataCache", JSON.stringify(cache));
-    console.log(`[FETCH SUCCESS] Cached definition for "${word}"`);
-    return wordObj;
+    console.warn(`[FETCH WARNING] No definition found for "${word}" in API response`);
+    return { word, definition: "No definition found." };
   } catch (err) {
     console.error(`[FETCH EXCEPTION] Exception fetching "${word}":`, err);
-    return {
-      word,
-      definition: "Definition unavailable due to network or server error.",
-    };
+    return { word, definition: "Definition unavailable due to network or server error." };
   }
 }
+
 
 async function initWords() {
   console.log("[INIT] Fetching SAT/ACT vocab list from API...");
