@@ -5,6 +5,19 @@ let satWords = [];
 
 const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com';
 
+const API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://words-around-the-world-backend.onrender.com"
+    : "http://localhost:3001";
+
+// Example WordsAPI call
+fetch(`${API_BASE_URL}/api/word/${word}`)
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error("Error:", err));
+
+
+
 const wordList = ["abase", "abate", "abdicate", "abduct", "aberration", "abet",
   "abhor", "abide", "abject", "abjure", "abnegation", "abort",
   "abridge", "abrogate", "abscond", "absolution", "abstain",
@@ -228,3 +241,4 @@ function exitQuiz() {
 window.onload = () => {
   initWords();
 };
+
