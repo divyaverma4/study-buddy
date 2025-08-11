@@ -5,19 +5,6 @@ let satWords = [];
 
 const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com';
 
-const API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://words-around-the-world-backend.onrender.com"
-    : "http://localhost:3001";
-
-// Example WordsAPI call
-fetch(`${API_BASE_URL}/api/word/${word}`)
-  .then(res => res.json())
-  .then(data => console.log(data))
-  .catch(err => console.error("Error:", err));
-
-
-
 const wordList = ["abase", "abate", "abdicate", "abduct", "aberration", "abet",
   "abhor", "abide", "abject", "abjure", "abnegation", "abort",
   "abridge", "abrogate", "abscond", "absolution", "abstain",
@@ -41,10 +28,12 @@ function shuffleArray(array) {
 async function fetchWordData(word) {
   const cache = JSON.parse(localStorage.getItem("wordDataCache")) || {};
   if (cache[word]) {
+    console.log(`[CACHE HIT] ${word}`);
     return cache[word];
   }
 
   try {
+    console.log(`[FETCH] Fetching data for: ${word}`);
     const res = await fetch(`${PROXY_API_BASE}/api/word/${word}`);
     const data = await res.json();
 
@@ -67,9 +56,11 @@ async function fetchWordData(word) {
 
 // Initialize Words (Shuffle + Fetch + Load History)
 async function initWords() {
+  console.log("Initializing words...");
   shuffleArray(wordList); // Shuffle on every load
   const promises = wordList.map(fetchWordData);
   satWords = await Promise.all(promises);
+  console.log("Words fetched:", satWords);
 
   history = JSON.parse(localStorage.getItem("history")) || [];
   currentIndex = 0;
@@ -80,7 +71,12 @@ async function initWords() {
 
 // Display current word card
 function displayCard(index) {
+  console.log("Displaying card at index:", index);
   const wordObj = satWords[index];
+  if (!wordObj) {
+    console.warn("No word found at index", index);
+    return;
+  }
   document.getElementById('cardFront').textContent = wordObj.word;
   document.getElementById('cardBack').innerHTML = `
     <strong>${wordObj.word}</strong><br>
@@ -112,7 +108,11 @@ function showNextCard() {
 
 // Toggle Favorite
 function toggleFavorite() {
-  const word = satWords[currentIndex].word;
+  const word = satWords[currentIndex]?.word;
+  if (!word) {
+    alert("No word selected!");
+    return;
+  }
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
   if (!favorites.includes(word)) {
     favorites.push(word);
@@ -127,6 +127,10 @@ function toggleFavorite() {
 // Update History Box
 function updateHistoryBox() {
   const box = document.getElementById("historyBox");
+  if (!box) {
+    console.warn("History box element not found");
+    return;
+  }
   if (history.length === 0) {
     box.innerHTML = "<em>No words viewed yet.</em>";
     return;
@@ -237,8 +241,20 @@ function exitQuiz() {
   document.getElementById('practiceQuizBtn').style.display = 'inline-block';
 }
 
-// Initialize on Load
-window.onload = () => {
-  initWords();
-};
+// Minimal test content if fetching fails or before loading
+function minimalTestDisplay() {
+  console.log("Displaying minimal test content");
+  document.getElementById('cardFront').textContent = "Test Word";
+  document.getElementById('cardBack').textContent = "This is a test definition.";
+}
 
+// Initialize on Load
+window.onload = async () => {
+  console.log("Window loaded, initializing words...");
+  try {
+    await initWords();
+  } catch (e) {
+    console.error("initWords failed, falling back to minimal test display", e);
+    minimalTestDisplay();
+  }
+};
