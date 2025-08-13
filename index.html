@@ -12,31 +12,39 @@
   </div>
 
   <div class="left-buttons">
-    <button class="favorite-btn" onclick="toggleFavorite()">⭐ Needs Practice </button>
-    <button id="toggleHistoryBtn" onclick="toggleHistory()">Show History</button>
-    <button id="practiceQuizBtn" onclick="showQuizSection()">Practice Quiz</button>
+    <button id="toggleHistoryBtn">Show History</button>
+    <button id="practiceQuizBtn">⭐ AI Practice Quiz</button>
   </div>
 
   <div class="container">
-    <div class="flashcard" onclick="flipCard()">
+    <div class="flashcard" id="flashcard">
       <div class="card-inner" id="cardInner">
         <div class="card-front" id="cardFront"> </div>
         <div class="card-back" id="cardBack"></div>
       </div>
     </div>
-    <button id="nextBtn" onclick="showNextCard()">Next Word ➡️</button>
+  <button id="nextBtn">Next Word ➡️</button>
 
-    <!-- Quiz Section (hidden initially) -->
-    <div id="quizSection" style="display: none;">
-      <div id="quizContainer"></div>
-      <button id="nextQuizBtn" onclick="startQuiz()">Next Question</button>
-      <button id="exitQuizBtn" onclick="exitQuiz()">Exit Quiz</button>
-    </div>
+
+   <!-- Quiz Section -->
+<!-- Add this full overlay div around your quiz section -->
+<div id="quizOverlay" style="display:none;">
+  <div id="quizSection">
+    <h2 id="quiz-question"></h2>         <!-- Matches JS -->
+    <div id="quiz-options"></div>         <!-- Matches JS -->
+    <div id="quiz-feedback"></div>        <!-- For showing correct/wrong -->
+        <button id="exit-quiz-btn">Exit Quiz</button>
+    <button id="next-quiz-btn">Next Question</button>
+  </div>
+  <div id="quiz-loading" style="display:none;">Loading...</div>
+</div>
+
+
+
 
     <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>
 
-  <!-- ONLY load script.js ONCE, NO inline script defining PROXY_API_BASE -->
   <script src="script.js"></script>
 </body>
 </html>

@@ -1,3 +1,10 @@
+// TODO
+// add subtitle like "your favorite ai flashcard assistant"
+// add hover popups to show history and ai practice quiz buttons for small descriptions
+// add previous card button with functionality, and put this directly to the left of the next card button
+// when history list is shown, have the words clickable. when the user clicks on a certain word in the history list, the flashcard flips to that word
+// finetune style 
+
 let currentIndex = 0;
 let flipped = false;
 let history = [];
@@ -5,24 +12,233 @@ let satWords = [];
 
 const PROXY_API_BASE = 'https://words-around-the-world-backend.onrender.com';
 
-const wordList = ["abase", "abate", "abdicate", "abduct", "aberration", "abet",
-  "abhor", "abide", "abject", "abjure", "abnegation", "abort",
-  "abridge", "abrogate", "abscond", "absolution", "abstain",
-  "abstruse", "accede", "accentuate", "accessible", "acclaim",
-  "accolade", "accommodating", "accord", "accost", "accretion",
-  "acerbic", "acquiesce", "acrimony", "acumen", "acute", "adamant",
-  "adept", "adhere", "admonish", "adorn", "adroit", "adulation",
-  "adumbrate", "adverse", "advocate", "aggrandize", "aggregate",
-  "allay", "allege", "alleviate", "allocate", "aloof", "altercation"
-];
+let quizWords = [];
+let currentQuizIndex = 0;
+let currentQuizData = null;
 
-// Shuffle Array
+window.onload = async () => {
+  await initWords();
+
+  // Grab elements inside onload
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+  const practiceQuizBtn = document.getElementById('practiceQuizBtn');
+  const flashcard = document.getElementById('flashcard');
+  const nextBtn = document.getElementById('nextBtn');
+  const nextQuizBtn = document.getElementById('next-quiz-btn');
+  const exitQuizBtn = document.getElementById('exit-quiz-btn');
+
+  // Quiz elements
+  window.quizOverlay = document.getElementById('quizOverlay');
+  window.quizSection = document.getElementById('quizSection');
+  window.quizQuestionEl = document.getElementById('quiz-question');
+  window.quizOptionsEl = document.getElementById('quiz-options');
+  window.quizFeedbackEl = document.getElementById('quiz-feedback');
+  window.loadingScreen = document.getElementById('quiz-loading');
+  window.nextQuizBtn = nextQuizBtn;
+
+  if (favoriteBtn) favoriteBtn.addEventListener('click', toggleFavorite);
+  if (toggleHistoryBtn) toggleHistoryBtn.addEventListener('click', toggleHistory);
+  if (practiceQuizBtn) practiceQuizBtn.addEventListener('click', startQuizFromHistory);
+  if (flashcard) flashcard.addEventListener('click', flipCard);
+  if (nextBtn) nextBtn.addEventListener('click', showNextCard);
+  if (nextQuizBtn) nextQuizBtn.addEventListener('click', nextQuizQuestion);
+  if (exitQuizBtn) exitQuizBtn.addEventListener('click', exitQuiz);
+
+  const prevBtn = document.getElementById('prevBtn');
+if (prevBtn) prevBtn.addEventListener('click', showPreviousCard);
+
+  hideQuizSection();
+};
+
+// Shuffle array in-place
 function shuffleArray(array) {
-  console.log("[DEBUG] Shuffling array...");
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+  return array;
+}
+
+function showQuizSection() {
+  if (window.quizOverlay) window.quizOverlay.style.display = "flex";
+}
+
+function hideQuizSection() {
+  if (window.quizOverlay) window.quizOverlay.style.display = "none";
+}
+
+function showPreviousCard() {
+  if (!satWords || satWords.length === 0) {
+    console.warn("[PREV] No words available to show previous.");
+    return;
+  }
+  currentIndex = (currentIndex - 1 + satWords.length) % satWords.length;
+  console.log(`[PREV] Showing previous card: index ${currentIndex}`);
+  displayCard(currentIndex);
+  // Optional: showSimilarWords();
+}
+
+
+function exitQuiz() {
+  hideQuizSection();
+  quizWords = [];
+  currentQuizIndex = 0;
+  currentQuizData = null;
+  if (window.nextQuizBtn) window.nextQuizBtn.style.display = "inline-block";
+  if (window.quizFeedbackEl) window.quizFeedbackEl.textContent = "";
+}
+
+// Start quiz from viewed words history
+async function startQuizFromHistory() {
+  if (!Array.isArray(history) || history.length === 0) {
+    alert("No words in history to quiz!");
+    return;
+  }
+
+  const shuffled = shuffleArray([...history]); // shuffle all history words
+  quizWords = shuffled.slice(0, 5);  // take only first 5 words
+  currentQuizIndex = 0;
+
+  showQuizSection();
+  await loadQuizQuestion();
+}
+
+
+async function loadQuizQuestion() {
+  if (!window.quizFeedbackEl || !window.quizOptionsEl || !window.quizQuestionEl || !window.loadingScreen || !window.quizSection) return;
+
+  window.quizFeedbackEl.textContent = "";
+  window.quizOptionsEl.innerHTML = "";
+
+  const word = quizWords[currentQuizIndex];
+  if (!word) {
+    window.quizQuestionEl.textContent = "🎉 Quiz complete!";
+    window.quizOptionsEl.innerHTML = "";
+    if (window.nextQuizBtn) window.nextQuizBtn.style.display = "none";
+    return;
+  }
+
+  // Show loading screen, hide quiz content
+  window.loadingScreen.style.display = "block";
+  window.quizSection.style.display = "none";
+
+  console.log(`Loading quiz question ${currentQuizIndex + 1} of ${quizWords.length} for word: "${word}"`);
+
+  try {
+    const response = await fetch(`${PROXY_API_BASE}/api/quiz/${encodeURIComponent(word)}`);
+    if (!response.ok) throw new Error("Failed to load quiz question");
+
+    currentQuizData = await response.json();
+    console.log("Received quiz data:", currentQuizData);
+    renderQuizQuestion();
+
+  } catch (error) {
+    console.error("Error fetching quiz:", error);
+    window.quizQuestionEl.textContent = "⚠️ Failed to load question.";
+  } finally {
+    window.loadingScreen.style.display = "none";
+    window.quizSection.style.display = "block";
+  }
+}
+
+function renderQuizQuestion() {
+  if (!currentQuizData) return;
+
+  window.quizQuestionEl.textContent = currentQuizData.question;
+  window.quizOptionsEl.innerHTML = "";
+
+  // Convert options object to array of [letter, text]
+  const optionsArr = Object.entries(currentQuizData.options);
+
+  // Find the text of the original correct answer
+  const correctAnswerText = currentQuizData.options[currentQuizData.correctAnswer];
+
+  // Shuffle the options array
+  shuffleArray(optionsArr);
+
+  // Reassign letters A, B, C, D to shuffled options
+  const letters = ['A', 'B', 'C', 'D'];
+
+  let newCorrectLetter = null;
+
+  optionsArr.forEach(([_, text], idx) => {
+    const letter = letters[idx];
+    if (text === correctAnswerText) {
+      newCorrectLetter = letter;  // Update correct answer letter
+    }
+    const btn = document.createElement("button");
+    btn.textContent = `${letter}) ${text}`;
+    btn.className = "quiz-option";
+    btn.onclick = () => checkAnswer(letter);
+    window.quizOptionsEl.appendChild(btn);
+  });
+
+  // Update correct answer letter to new shuffled letter
+  currentQuizData.correctAnswer = newCorrectLetter;
+}
+
+
+function checkAnswer(selectedLetter) {
+  const correct = selectedLetter === currentQuizData.correctAnswer;
+  window.quizFeedbackEl.textContent = correct ? "✅ Correct!" : `❌ Wrong! Correct: ${currentQuizData.correctAnswer}`;
+}
+
+async function nextQuizQuestion() {
+  currentQuizIndex++;
+  if (currentQuizIndex >= quizWords.length) {
+    window.quizQuestionEl.textContent = "🎉 Quiz complete!";
+    window.quizOptionsEl.innerHTML = "";
+    if (window.nextQuizBtn) window.nextQuizBtn.style.display = "none";
+    return;
+  }
+  await loadQuizQuestion();
+}
+
+async function initWords() {
+  console.log("[INIT] Fetching SAT/ACT vocab list from API...");
+  try {
+    const listRes = await fetch(`${PROXY_API_BASE}/api/vocab`);
+    if (!listRes.ok) {
+      throw new Error(`Failed to fetch vocab list, status: ${listRes.status}`);
+    }
+    const listData = await listRes.json();
+    const wordsFromAPI = listData.words;
+    if (!Array.isArray(wordsFromAPI) || wordsFromAPI.length === 0) {
+      throw new Error("Received empty or invalid word list from API");
+    }
+    console.log(`[INIT] Received ${wordsFromAPI.length} words from API.`);
+
+    shuffleArray(wordsFromAPI);
+
+    satWords = [];
+    for (const [i, word] of wordsFromAPI.entries()) {
+      const wordData = await fetchWordData(word);
+      satWords.push(wordData);
+
+      if (i === 0) {
+        displayCard(0);
+      }
+
+      console.log(`[INIT] Fetched definition ${i + 1}/${wordsFromAPI.length}`);
+    }
+    console.log(`[INIT] Word definitions fetched, total: ${satWords.length}`);
+
+  } catch (e) {
+    console.error("[ERROR] initWords failed:", e);
+    satWords = [];
+  }
+
+  history = JSON.parse(localStorage.getItem("history")) || [];
+  currentIndex = 0;
+
+  if (satWords.length > 0 && currentIndex !== 0) {
+    displayCard(currentIndex);
+  } else if (satWords.length === 0) {
+    console.warn("[WARNING] No words fetched, showing fallback card");
+    displayFallbackCard();
+  }
+  updateHistoryBox();
 }
 
 // Fetch word data via proxy with caching
@@ -43,7 +259,6 @@ async function fetchWordData(word) {
     }
     const data = await res.json();
 
-    // Handle OpenAI style response (has "word" and "definition" directly)
     if (data.word && data.definition) {
       const wordObj = { word: data.word, definition: data.definition };
       cache[word] = wordObj;
@@ -52,7 +267,6 @@ async function fetchWordData(word) {
       return wordObj;
     }
 
-    // Fallback for WordsAPI style (has results array)
     if (data.results && data.results.length > 0) {
       const wordObj = { word, definition: data.results[0].definition };
       cache[word] = wordObj;
@@ -69,63 +283,15 @@ async function fetchWordData(word) {
   }
 }
 
-
-async function initWords() {
-  console.log("[INIT] Fetching SAT/ACT vocab list from API...");
-  try {
-    // Step 1: Fetch the word list from your server
-    const listRes = await fetch(`${PROXY_API_BASE}/api/vocab`);
-    if (!listRes.ok) {
-      throw new Error(`Failed to fetch vocab list, status: ${listRes.status}`);
-    }
-    const listData = await listRes.json();
-    const wordsFromAPI = listData.words;
-    if (!Array.isArray(wordsFromAPI) || wordsFromAPI.length === 0) {
-      throw new Error("Received empty or invalid word list from API");
-    }
-    console.log(`[INIT] Received ${wordsFromAPI.length} words from API.`);
-
-    // Step 2: Shuffle the list
-    shuffleArray(wordsFromAPI);
-
-    // Step 3: Fetch definitions **sequentially** with progressive UI update
-    satWords = [];
-    for (const [i, word] of wordsFromAPI.entries()) {
-      const wordData = await fetchWordData(word);
-      satWords.push(wordData);
-
-      // Show the first word immediately after first fetch
-      if (i === 0) {
-        displayCard(0);
-        showSimilarWords();
-      }
-
-      // Optional: you can update other UI elements progressively here if you want
-      console.log(`[INIT] Fetched definition ${i + 1}/${wordsFromAPI.length}`);
-    }
-    console.log(`[INIT] Word definitions fetched, total: ${satWords.length}`);
-
-  } catch (e) {
-    console.error("[ERROR] initWords failed:", e);
-    satWords = [];
+function displayFallbackCard() {
+  const frontEl = document.getElementById('cardFront');
+  const backEl = document.getElementById('cardBack');
+  if (frontEl && backEl) {
+    frontEl.textContent = "Test Word";
+    backEl.textContent = "This is a fallback test definition.";
   }
-
-  history = JSON.parse(localStorage.getItem("history")) || [];
-  currentIndex = 0;
-
-  if (satWords.length > 0 && currentIndex !== 0) {
-    displayCard(currentIndex);
-    showSimilarWords();
-  } else if (satWords.length === 0) {
-    console.warn("[WARNING] No words fetched, showing fallback card");
-    displayFallbackCard();
-  }
-  updateHistoryBox();
 }
 
-
-
-// Display current word card
 function displayCard(index) {
   console.log(`[DISPLAY] Showing card index: ${index}`);
   if (!satWords || satWords.length === 0) {
@@ -163,17 +329,6 @@ function displayCard(index) {
   updateHistoryBox();
 }
 
-// Fallback card if no words loaded
-function displayFallbackCard() {
-  const frontEl = document.getElementById('cardFront');
-  const backEl = document.getElementById('cardBack');
-  if (frontEl && backEl) {
-    frontEl.textContent = "Test Word";
-    backEl.textContent = "This is a fallback test definition.";
-  }
-}
-
-// Flip Card
 function flipCard() {
   const card = document.getElementById('cardInner');
   if (!card) {
@@ -185,7 +340,6 @@ function flipCard() {
   console.log(`[FLIP] Card flipped? ${flipped}`);
 }
 
-// Next Card
 function showNextCard() {
   if (!satWords || satWords.length === 0) {
     console.warn("[NEXT] No words available to show next.");
@@ -194,10 +348,8 @@ function showNextCard() {
   currentIndex = (currentIndex + 1) % satWords.length;
   console.log(`[NEXT] Showing next card: index ${currentIndex}`);
   displayCard(currentIndex);
-  showSimilarWords();
 }
 
-// Toggle Favorite
 function toggleFavorite() {
   const word = satWords[currentIndex]?.word;
   if (!word) {
@@ -215,10 +367,8 @@ function toggleFavorite() {
     console.log(`[FAVORITE] ${word} already in favorites`);
   }
   localStorage.setItem("favorites", JSON.stringify(favorites));
-  showSimilarWords();
 }
 
-// Update History Box
 function updateHistoryBox() {
   const box = document.getElementById("historyBox");
   if (!box) {
@@ -233,7 +383,6 @@ function updateHistoryBox() {
   console.log(`[HISTORY] Updated history box with ${history.length} words`);
 }
 
-// Toggle History Button Text and Visibility
 function toggleHistory() {
   const box = document.getElementById("historyBox");
   const btn = document.getElementById("toggleHistoryBtn");
@@ -253,46 +402,3 @@ function toggleHistory() {
     console.log("[TOGGLE HISTORY] History hidden");
   }
 }
-
-// Placeholder for similar words
-function showSimilarWords() {
-  // Implement your logic here or leave empty for now
-}
-
-// Quiz-related functions (just stubs here)
-function showQuizSection() {
-  document.getElementById('quizSection').style.display = 'block';
-  document.getElementById('practiceQuizBtn').style.display = 'none';
-  // Implement your quiz start logic here if needed
-}
-
-function startQuiz() {
-  // Your existing quiz start logic here
-  console.log("Starting quiz (not implemented here)");
-}
-
-function exitQuiz() {
-  document.getElementById('quizSection').style.display = 'none';
-  document.getElementById('practiceQuizBtn').style.display = 'inline-block';
-}
-
-// --- Export functions globally for inline onclick handlers ---
-window.toggleFavorite = toggleFavorite;
-window.toggleHistory = toggleHistory;
-window.showQuizSection = showQuizSection;
-window.flipCard = flipCard;
-window.showNextCard = showNextCard;
-window.startQuiz = startQuiz;
-window.exitQuiz = exitQuiz;
-
-// Initialize on Load
-window.onload = async () => {
-  console.log("[WINDOW LOAD] Starting app initialization...");
-  try {
-    await initWords();
-    console.log("[WINDOW LOAD] Initialization complete");
-  } catch (e) {
-    console.error("[WINDOW LOAD] initWords failed, showing fallback card", e);
-    displayFallbackCard();
-  }
-};
