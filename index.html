@@ -8,12 +8,14 @@
 </head>
 <body>
   <div class="tabs">
-    <div class="tab active">Study Buddy</div>
+    <div class="tab active" id="header">Study Buddy
+      <!-- Subtitle will be inserted here by script.js -->
+    </div>
   </div>
 
   <div class="left-buttons">
-    <button id="toggleHistoryBtn">Show History</button>
-    <button id="practiceQuizBtn">⭐ AI Practice Quiz</button>
+    <button id="toggleHistoryBtn" title="Show or hide your history of viewed words">Show History</button>
+    <button id="practiceQuizBtn" title="Start a quick AI-generated practice quiz based on your history">⭐ AI Practice Quiz</button>
   </div>
 
   <div class="container">
@@ -23,24 +25,24 @@
         <div class="card-back" id="cardBack"></div>
       </div>
     </div>
-  <button id="nextBtn">Next Word ➡️</button>
 
+    <!-- Previous button directly left of Next button -->
+    <div style="margin-top: 10px;">
+      <button id="prevBtn">⬅️ Previous Word</button>
+      <button id="nextBtn">Next Word ➡️</button>
+    </div>
 
-   <!-- Quiz Section -->
-<!-- Add this full overlay div around your quiz section -->
-<div id="quizOverlay" style="display:none;">
-  <div id="quizSection">
-    <h2 id="quiz-question"></h2>         <!-- Matches JS -->
-    <div id="quiz-options"></div>         <!-- Matches JS -->
-    <div id="quiz-feedback"></div>        <!-- For showing correct/wrong -->
+    <!-- Quiz Section -->
+    <div id="quizOverlay" style="display:none;">
+      <div id="quizSection">
+        <h2 id="quiz-question"></h2>
+        <div id="quiz-options"></div>
+        <div id="quiz-feedback"></div>
         <button id="exit-quiz-btn">Exit Quiz</button>
-    <button id="next-quiz-btn">Next Question</button>
-  </div>
-  <div id="quiz-loading" style="display:none;">Loading...</div>
-</div>
-
-
-
+        <button id="next-quiz-btn">Next Question</button>
+      </div>
+      <div id="quiz-loading" style="display:none;">Loading...</div>
+    </div>
 
     <div class="history-box" id="historyBox" style="display: none;"></div>
   </div>

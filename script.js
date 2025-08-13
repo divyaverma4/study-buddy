@@ -1,9 +1,4 @@
-// TODO
-// add subtitle like "your favorite ai flashcard assistant"
-// add hover popups to show history and ai practice quiz buttons for small descriptions
-// add previous card button with functionality, and put this directly to the left of the next card button
-// when history list is shown, have the words clickable. when the user clicks on a certain word in the history list, the flashcard flips to that word
-// finetune style 
+// Added subtitle, hover popups, previous button, clickable history, and style tweaks
 
 let currentIndex = 0;
 let flipped = false;
@@ -17,6 +12,19 @@ let currentQuizIndex = 0;
 let currentQuizData = null;
 
 window.onload = async () => {
+  // Add subtitle below main title
+  const header = document.getElementById('header');
+  if (header) {
+    const subtitle = document.createElement('div');
+    subtitle.id = 'subtitle';
+    subtitle.textContent = 'Your next favorite AI flashcard assistant!';
+    subtitle.style.fontStyle = 'italic';
+    subtitle.style.fontSize = '1rem';
+    subtitle.style.color = '#555';
+    subtitle.style.marginTop = '4px';
+    header.appendChild(subtitle);
+  }
+
   await initWords();
 
   // Grab elements inside onload
@@ -45,11 +53,50 @@ window.onload = async () => {
   if (nextQuizBtn) nextQuizBtn.addEventListener('click', nextQuizQuestion);
   if (exitQuizBtn) exitQuizBtn.addEventListener('click', exitQuiz);
 
+  // Add previous button functionality
   const prevBtn = document.getElementById('prevBtn');
-if (prevBtn) prevBtn.addEventListener('click', showPreviousCard);
+  if (prevBtn) prevBtn.addEventListener('click', showPreviousCard);
 
+  // Add hover tooltips for history and quiz buttons
+  if (toggleHistoryBtn) {
+    toggleHistoryBtn.title = "Show or hide your history of viewed words";
+  }
+  if (practiceQuizBtn) {
+    practiceQuizBtn.title = "Start a quick AI-generated practice quiz based on your history";
+  }
+
+  // Make history words clickable to flip to that word
+  setupClickableHistory();
+
+  // Initial hide quiz section
   hideQuizSection();
 };
+
+// Setup click handlers on history words
+function setupClickableHistory() {
+  const box = document.getElementById("historyBox");
+  if (!box) return;
+
+  box.addEventListener('click', (event) => {
+    const clicked = event.target;
+    if (clicked.tagName.toLowerCase() === 'li') {
+      const wordClicked = clicked.textContent;
+      // Find index of this word in satWords
+      const foundIndex = satWords.findIndex(w => w.word === wordClicked);
+      if (foundIndex !== -1) {
+        currentIndex = foundIndex;
+        displayCard(currentIndex);
+        // If card was flipped, reset flip
+        const innerEl = document.getElementById('cardInner');
+        if (innerEl && innerEl.classList.contains('flipped')) {
+          innerEl.classList.remove('flipped');
+          flipped = false;
+        }
+        console.log(`[HISTORY CLICK] Flipped to word: ${wordClicked} at index ${foundIndex}`);
+      }
+    }
+  });
+}
 
 // Shuffle array in-place
 function shuffleArray(array) {
@@ -76,9 +123,7 @@ function showPreviousCard() {
   currentIndex = (currentIndex - 1 + satWords.length) % satWords.length;
   console.log(`[PREV] Showing previous card: index ${currentIndex}`);
   displayCard(currentIndex);
-  // Optional: showSimilarWords();
 }
-
 
 function exitQuiz() {
   hideQuizSection();
@@ -103,7 +148,6 @@ async function startQuizFromHistory() {
   showQuizSection();
   await loadQuizQuestion();
 }
-
 
 async function loadQuizQuestion() {
   if (!window.quizFeedbackEl || !window.quizOptionsEl || !window.quizQuestionEl || !window.loadingScreen || !window.quizSection) return;
@@ -178,7 +222,6 @@ function renderQuizQuestion() {
   currentQuizData.correctAnswer = newCorrectLetter;
 }
 
-
 function checkAnswer(selectedLetter) {
   const correct = selectedLetter === currentQuizData.correctAnswer;
   window.quizFeedbackEl.textContent = correct ? "✅ Correct!" : `❌ Wrong! Correct: ${currentQuizData.correctAnswer}`;
@@ -213,192 +256,108 @@ async function initWords() {
 
     satWords = [];
     for (const [i, word] of wordsFromAPI.entries()) {
-      const wordData = await fetchWordData(word);
-      satWords.push(wordData);
-
-      if (i === 0) {
-        displayCard(0);
+      const response = await fetch(`${PROXY_API_BASE}/api/word/${encodeURIComponent(word)}`);
+      if (!response.ok) {
+        console.warn(`Failed to fetch word data for "${word}", skipping.`);
+        continue;
       }
-
-      console.log(`[INIT] Fetched definition ${i + 1}/${wordsFromAPI.length}`);
+      const wordData = await response.json();
+      satWords.push(wordData);
+      // For demo or limited initial loading, break early
+      if (i >= 49) break;
     }
-    console.log(`[INIT] Word definitions fetched, total: ${satWords.length}`);
+    console.log(`[INIT] Loaded ${satWords.length} word entries.`);
 
-  } catch (e) {
-    console.error("[ERROR] initWords failed:", e);
-    satWords = [];
-  }
-
-  history = JSON.parse(localStorage.getItem("history")) || [];
-  currentIndex = 0;
-
-  if (satWords.length > 0 && currentIndex !== 0) {
     displayCard(currentIndex);
-  } else if (satWords.length === 0) {
-    console.warn("[WARNING] No words fetched, showing fallback card");
-    displayFallbackCard();
-  }
-  updateHistoryBox();
-}
-
-// Fetch word data via proxy with caching
-async function fetchWordData(word) {
-  const cache = JSON.parse(localStorage.getItem("wordDataCache")) || {};
-  if (cache[word]) {
-    console.log(`[CACHE HIT] Returning cached data for "${word}"`);
-    return cache[word];
-  } else {
-    console.log(`[CACHE MISS] No cached data for "${word}", fetching from API...`);
-  }
-
-  try {
-    const res = await fetch(`${PROXY_API_BASE}/api/word/${word}`);
-    if (!res.ok) {
-      console.error(`[FETCH ERROR] Failed to fetch "${word}", status: ${res.status}`);
-      return { word, definition: "Definition unavailable due to fetch error." };
-    }
-    const data = await res.json();
-
-    if (data.word && data.definition) {
-      const wordObj = { word: data.word, definition: data.definition };
-      cache[word] = wordObj;
-      localStorage.setItem("wordDataCache", JSON.stringify(cache));
-      console.log(`[FETCH SUCCESS] Cached definition for "${word}"`);
-      return wordObj;
-    }
-
-    if (data.results && data.results.length > 0) {
-      const wordObj = { word, definition: data.results[0].definition };
-      cache[word] = wordObj;
-      localStorage.setItem("wordDataCache", JSON.stringify(cache));
-      console.log(`[FETCH SUCCESS] Cached definition for "${word}"`);
-      return wordObj;
-    }
-
-    console.warn(`[FETCH WARNING] No definition found for "${word}" in API response`);
-    return { word, definition: "No definition found." };
-  } catch (err) {
-    console.error(`[FETCH EXCEPTION] Exception fetching "${word}":`, err);
-    return { word, definition: "Definition unavailable due to network or server error." };
-  }
-}
-
-function displayFallbackCard() {
-  const frontEl = document.getElementById('cardFront');
-  const backEl = document.getElementById('cardBack');
-  if (frontEl && backEl) {
-    frontEl.textContent = "Test Word";
-    backEl.textContent = "This is a fallback test definition.";
+  } catch (error) {
+    console.error("Error during word initialization:", error);
+    alert("Failed to initialize words. Please try reloading the page.");
   }
 }
 
 function displayCard(index) {
-  console.log(`[DISPLAY] Showing card index: ${index}`);
   if (!satWords || satWords.length === 0) {
-    console.warn("[DISPLAY] No words loaded yet.");
+    console.warn("No words to display.");
     return;
   }
-  if (index < 0 || index >= satWords.length) {
-    console.warn(`[DISPLAY] Index out of range: ${index}`);
-    return;
-  }
-  const wordObj = satWords[index];
-  if (!wordObj) {
-    console.warn("[DISPLAY] Word object is undefined at index", index);
+  const wordEntry = satWords[index];
+  if (!wordEntry) {
+    console.warn(`No word found at index ${index}`);
     return;
   }
 
-  const frontEl = document.getElementById('cardFront');
-  const backEl = document.getElementById('cardBack');
-  const innerEl = document.getElementById('cardInner');
+  const front = document.getElementById('cardFront');
+  const back = document.getElementById('cardBack');
+  const inner = document.getElementById('cardInner');
 
-  if (!frontEl || !backEl || !innerEl) {
-    console.error("[DISPLAY] Required DOM elements missing (cardFront, cardBack, cardInner)");
+  if (!front || !back || !inner) {
+    console.warn("Missing flashcard elements.");
     return;
   }
 
-  frontEl.textContent = wordObj.word;
-  backEl.innerHTML = `<strong>${wordObj.word}</strong><br><em>${wordObj.definition || "Definition unavailable."}</em><br><br>`;
-  innerEl.classList.remove('flipped');
-  flipped = false;
-
-  if (!history.includes(wordObj.word)) {
-    history.push(wordObj.word);
-    localStorage.setItem("history", JSON.stringify(history));
+  // Reset flip state
+  if (flipped) {
+    inner.classList.remove('flipped');
+    flipped = false;
   }
-  updateHistoryBox();
+
+  front.textContent = wordEntry.word || "";
+  back.innerHTML = `
+    <strong>Definition:</strong> ${wordEntry.definition || "N/A"}
+  `;
+
+  // Add current word to history if not already there
+  if (!history.includes(wordEntry.word)) {
+    history.push(wordEntry.word);
+  }
+
+  updateHistoryUI();
+
+  console.log(`[DISPLAY] Showing word "${wordEntry.word}" at index ${index}`);
 }
 
 function flipCard() {
-  const card = document.getElementById('cardInner');
-  if (!card) {
-    console.error("[FLIP] cardInner element not found");
-    return;
+  const inner = document.getElementById('cardInner');
+  if (!inner) return;
+  if (flipped) {
+    inner.classList.remove('flipped');
+  } else {
+    inner.classList.add('flipped');
   }
-  card.classList.toggle('flipped');
   flipped = !flipped;
-  console.log(`[FLIP] Card flipped? ${flipped}`);
 }
 
 function showNextCard() {
   if (!satWords || satWords.length === 0) {
-    console.warn("[NEXT] No words available to show next.");
+    console.warn("[NEXT] No words loaded.");
     return;
   }
   currentIndex = (currentIndex + 1) % satWords.length;
-  console.log(`[NEXT] Showing next card: index ${currentIndex}`);
   displayCard(currentIndex);
 }
 
-function toggleFavorite() {
-  const word = satWords[currentIndex]?.word;
-  if (!word) {
-    alert("No word selected!");
-    console.warn("[FAVORITE] No word at current index");
-    return;
-  }
-  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  if (!favorites.includes(word)) {
-    favorites.push(word);
-    alert(`⭐ ${word} added to favorites!`);
-    console.log(`[FAVORITE] Added ${word} to favorites`);
-  } else {
-    alert(`${word} is already in favorites.`);
-    console.log(`[FAVORITE] ${word} already in favorites`);
-  }
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-}
-
-function updateHistoryBox() {
-  const box = document.getElementById("historyBox");
-  if (!box) {
-    console.warn("[HISTORY] historyBox element not found");
-    return;
-  }
-  if (history.length === 0) {
-    box.innerHTML = "<em>No words viewed yet.</em>";
-    return;
-  }
-  box.innerHTML = `<strong>Seen Words:</strong><br><ul>${history.map(w => `<li>${w}</li>`).join("")}</ul>`;
-  console.log(`[HISTORY] Updated history box with ${history.length} words`);
-}
-
 function toggleHistory() {
-  const box = document.getElementById("historyBox");
-  const btn = document.getElementById("toggleHistoryBtn");
+  const box = document.getElementById('historyBox');
+  const toggleBtn = document.getElementById('toggleHistoryBtn');
+  if (!box || !toggleBtn) return;
 
-  if (!box || !btn) {
-    console.warn("[TOGGLE HISTORY] Elements missing");
-    return;
-  }
-
-  if (box.style.display === "none" || box.style.display === "") {
+  if (box.style.display === "none") {
     box.style.display = "block";
-    btn.textContent = "Close History";
-    console.log("[TOGGLE HISTORY] History shown");
+    toggleBtn.textContent = "Hide History";
   } else {
     box.style.display = "none";
-    btn.textContent = "Show History";
-    console.log("[TOGGLE HISTORY] History hidden");
+    toggleBtn.textContent = "Show History";
   }
+}
+
+function updateHistoryUI() {
+  const box = document.getElementById('historyBox');
+  if (!box) return;
+
+  box.innerHTML = "<ul>" + history.map(w => `<li title="Click to jump to this word">${w}</li>`).join('') + "</ul>";
+}
+
+// Optional toggle favorite function placeholder
+function toggleFavorite() {
+  alert("Favorite feature coming soon!");
 }

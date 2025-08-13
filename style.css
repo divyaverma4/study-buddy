@@ -10,6 +10,7 @@ body {
   align-items: center;
 }
 
+/* Main tab header */
 .tabs {
   display: flex;
   justify-content: center;
@@ -19,8 +20,19 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   font-size: 1.5rem;
   font-weight: bold;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* Subtitle below main title */
+#subtitle {
+  font-style: italic;
+  font-size: 1rem;
+  color: #555;
+  margin-top: 4px;
+}
+
+/* Container for flashcard and buttons */
 .container {
   flex: 1;
   display: flex;
@@ -30,15 +42,21 @@ body {
   gap: 1rem;
   padding: 1rem;
 
-  margin-left: 220px; /* make room so left-buttons don’t cover the container */
+  margin-left: 220px; /* space for left-buttons */
 }
-
 
 .flashcard {
   width: 350px;
   height: 200px;
   perspective: 1000px;
   cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 15px;
+  transition: box-shadow 0.3s ease;
+}
+
+.flashcard:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
 .card-inner {
@@ -47,6 +65,7 @@ body {
   position: relative;
   transition: transform 0.8s;
   transform-style: preserve-3d;
+  border-radius: 15px;
 }
 
 .card-inner.flipped {
@@ -92,14 +111,73 @@ button {
   font-weight: bold;
   color: #6a4b00;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 button:hover {
   background-color: #ffeb99;
+  box-shadow: 0 4px 10px rgba(106,75,0,0.3);
 }
 
+/* Container for previous & next buttons aligned horizontally */
+#prevBtn, #nextBtn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#prevBtn {
+  margin-right: 10px;
+}
+
+/* Left buttons fixed vertically */
+.left-buttons {
+  position: fixed;
+  top: 12rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  z-index: 1000;
+}
+
+/* History box styling */
+.history-box {
+  margin-top: 1rem;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-family: "Markazi Text", serif;
+  display: none;
+  cursor: default;
+}
+
+.history-box ul {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.history-box li {
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.history-box li:hover {
+  background-color: #ffeb99;
+}
+
+/* Suggestions container and similar words */
 .suggestions-container {
   margin-top: 20px;
   text-align: center;
@@ -127,49 +205,15 @@ button:hover {
   transform: scale(1.05);
 }
 
-/* Add to the bottom of your existing CSS */
-
-.left-buttons {
-  position: fixed;
-  top: 12rem;
-  left: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  z-index: 1000;
-}
-
-.history-box {
-  margin-top: 1rem;
-  max-height: 250px;
-  overflow-y: auto;
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 1rem;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  font-family: "Markazi Text", serif;
-  display: none;
-}
-
-#nextBtn {
-  margin-top: 2rem;
-  padding: 0.6rem 1.4rem;
-  border-radius: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-
+/* Quiz overlay */
 #quizOverlay {
-  position: fixed;        /* overlay covers the entire viewport */
+  position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.6);  /* semi-transparent dark background */
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;          /* on top of everything */
+  z-index: 9999;
 }
 
 #quizSection {
@@ -180,11 +224,5 @@ button:hover {
   max-width: 600px;
   box-shadow: 0 0 15px rgba(0,0,0,0.3);
   overflow-y: auto;
-  max-height: 80vh;       /* allow scrolling if content is too tall */
+  max-height: 80vh;
 }
-
-/*body.quiz-active .container {
-  filter: blur(2px) brightness(0.7);
-  pointer-events: none; /* disables interaction with background 
-}
-*/
