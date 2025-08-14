@@ -70,6 +70,8 @@ window.onload = async () => {
 
   // Initial hide quiz section
   hideQuizSection();
+
+  showAboutModal();
 };
 
 // Setup click handlers on history words
@@ -361,3 +363,24 @@ function updateHistoryUI() {
 function toggleFavorite() {
   alert("Favorite feature coming soon!");
 }
+
+// --- About/How-To Modal ---
+function showAboutModal() {
+  const modal = document.getElementById('aboutModal');
+  const closeBtn = document.getElementById('closeAbout');
+  if (!modal || !closeBtn) return;
+
+  modal.style.display = "block";
+
+  closeBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  // Close modal if user clicks outside content
+  window.onclick = event => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+}
+
