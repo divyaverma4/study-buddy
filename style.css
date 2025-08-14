@@ -120,7 +120,6 @@ button:hover {
   box-shadow: 0 4px 10px rgba(106,75,0,0.3);
 }
 
-/* Container for previous & next buttons aligned horizontally */
 #prevBtn, #nextBtn {
   margin-top: 1rem;
   padding: 0.6rem 1.4rem;
@@ -225,4 +224,41 @@ button:hover {
   box-shadow: 0 0 15px rgba(0,0,0,0.3);
   overflow-y: auto;
   max-height: 80vh;
+}
+
+/* About/How-To Modal */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 10000; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.5); 
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; 
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%; 
+  max-width: 400px;
+  box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
 }
