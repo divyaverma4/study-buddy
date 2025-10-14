@@ -5,6 +5,9 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// // Increase timeout for this route to 5 minutes (300 seconds)
+// export const maxDuration = 300;
+
 export async function GET(request) {
   try {
     // get the count parameter from URL (default to 10 words)

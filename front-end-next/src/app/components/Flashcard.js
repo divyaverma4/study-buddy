@@ -1,11 +1,59 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 
 function Flashcard() {
+  const [words, setWords] = React.useState([]);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [isFlipped, setIsFlipped] = React.useState(false);
+  // const [loading, setLoading] = React.useState(true);
+
+  useEffect(() => {
+    // fetch words from the API
+    const fetchWords = async () => {
+      try {
+        const response = await fetch("/api/words");
+        const data = await response.json();
+        if (data.success) {
+          setWords(data.words);
+        } else {
+          console.error("Failed to fetch words:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching words:", error);
+      }
+    };
+    fetchWords();
+  }, []); // empty array -> run only once on mount
+
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
+  };
+
+  const handleNext = () => {
+    if (currentIndex < words.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setIsFlipped(false);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setIsFlipped(false);
+    } else {
+      setCurrentIndex(0);
+      setIsFlipped(false);
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
       <div className="flex items-center gap-8 w-full max-w-5xl">
         {/* previous button*/}
-        <button className="w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all">
+        <button
+          className="w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all"
+          onClick={handlePrev}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -23,12 +71,26 @@ function Flashcard() {
         </button>
 
         {/* flashcard */}
-        <div className="flex-1 h-96 bg-white rounded-2xl shadow-xl p-8 flex items-center justify-center">
-          <p className="text-2xl text-gray-700">6-7</p>
+        <div
+          className="flex-1 h-96 bg-white rounded-2xl shadow-xl p-8 flex items-center justify-center cursor-pointer"
+          onClick={handleFlip}
+        >
+          {isFlipped ? (
+            <p className="text-2xl text-gray-700">
+              {words[currentIndex]?.definition}
+            </p>
+          ) : (
+            <p className="text-2xl text-gray-700">
+              {words[currentIndex]?.word}
+            </p>
+          )}
         </div>
 
         {/* next button */}
-        <button className="w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all">
+        <button
+          className="w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all"
+          onClick={handleNext}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
