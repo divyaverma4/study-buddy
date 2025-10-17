@@ -1,4 +1,5 @@
 "use client";
+import "./flashcards.css";
 import React, { useEffect } from "react";
 
 function Flashcard() {
@@ -71,7 +72,7 @@ function Flashcard() {
         </button>
 
         {/* flashcard */}
-        <div
+        {/* <div
           className="flex-1 h-96 bg-white rounded-2xl shadow-xl p-8 flex items-center justify-center cursor-pointer"
           onClick={handleFlip}
         >
@@ -84,6 +85,24 @@ function Flashcard() {
               {words[currentIndex]?.word}
             </p>
           )}
+        </div> */}
+          {/* flashcard */}
+        <div
+          className={`flashcard-container flex-1 h-96 bg-transparent cursor-pointer`}
+          onClick={handleFlip}
+        >
+          <div className={`flashcard ${isFlipped ? "flipped" : ""}`}>
+            <div className="flashcard-front flex items-center justify-center rounded-2xl shadow-xl bg-white p-8">
+              <p className="text-2xl text-gray-700">
+                {words[currentIndex]?.word}
+              </p>
+            </div>
+            <div className="flashcard-back flex items-center justify-center rounded-2xl shadow-xl bg-white p-8">
+              <p className="text-2xl text-gray-700">
+                {words[currentIndex]?.definition}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* next button */}
