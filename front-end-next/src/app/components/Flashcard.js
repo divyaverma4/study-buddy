@@ -26,6 +26,23 @@ function Flashcard() {
     fetchWords();
   }, []); // empty array -> run only once on mount
 
+  // add keyboard event listener for spacebar
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.code === 'Space') {
+        event.preventDefault(); 
+        handleFlip();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+
+    // cleanup function to remove event listener
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [isFlipped]);
+
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
