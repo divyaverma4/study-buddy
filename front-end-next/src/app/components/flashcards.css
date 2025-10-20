@@ -1,6 +1,5 @@
-/* Add flipping animation, lowkey don't know how lol*/
 .flashcard-container {
-  perspective: 1000px; /* gives a 3D look */
+  perspective: 1000px; 
 }
 
 .flashcard {
