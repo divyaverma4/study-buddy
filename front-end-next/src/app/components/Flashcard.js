@@ -10,9 +10,14 @@ function Flashcard() {
   // const [loading, setLoading] = React.useState(true);
 
   //check for clock
-  const [showClock, setShowClock] = React.useState(
-    () => localStorage.getItem("showClock") === "true" || false
-  );
+  const [showClock, setShowClock] = React.useState(false);
+  React.useEffect(() => {
+    const savedClockSetting = localStorage.getItem("showClock");
+    if (savedClockSetting !== null) {
+      setShowClock(savedClockSetting === "true");
+    }
+  }, []);
+
 
   useEffect(() => {
     // fetch words from the API

@@ -23,14 +23,25 @@ function Clock() {
 function SettingsPage() {
   // --- STATES ---
   const [darkMode, setDarkMode] = React.useState(
-    () => localStorage.getItem("darkMode") === "true" || false
+    () => localStorage.getItem("darkMode") === "true" 
   );
   const [showClock, setShowClock] = React.useState(
-    () => localStorage.getItem("showClock") === "true" || false
+    () => localStorage.getItem("showClock") === "true" 
   );
   const [shuffleCards, setShuffleCards] = React.useState(
-    () => localStorage.getItem("shuffleCards") === "true" || false
+    () => localStorage.getItem("shuffleCards") === "true" 
   );
+  
+  // --- Apply Theme on Load ---
+  React.useEffect(() => {
+    if (darkMode) {
+      document.documentElement.style.setProperty("--background", "#0b1e3b");
+      document.documentElement.style.setProperty("--foreground", "#fff4cc");
+    } else {
+      document.documentElement.style.setProperty("--background", "#b4d8e7"); // light blue
+      document.documentElement.style.setProperty("--foreground", "#171717"); // black
+    }
+  }, [darkMode]);
 
   // --- HANDLERS ---
   const handleDarkModeToggle = () => {
