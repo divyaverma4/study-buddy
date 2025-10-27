@@ -1,15 +1,37 @@
 "use client";
 import "./flashcards.css";
+import Clock from "../components/Clock";
 import React, { useEffect } from "react";
 
 function Flashcard() {
   const [words, setWords] = React.useState([]);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isFlipped, setIsFlipped] = React.useState(false);
-  // const [loading, setLoading] = React.useState(true);
+  const [showClock, setShowClock] = React.useState(false);
 
+  // Load clock preference
   useEffect(() => {
-    // fetch words from the API
+    const savedClockSetting = localStorage.getItem("showClock");
+    if (savedClockSetting !== null) {
+      setShowClock(savedClockSetting === "true");
+    }
+  }, []);
+
+  // Hardcoded demo words
+  useEffect(() => {
+    const demoWords = [
+      { word: "Abate", definition: "To become less intense or widespread." },
+      { word: "Benevolent", definition: "Well-meaning and kind." },
+      { word: "Cacophony", definition: "A harsh, discordant mixture of sounds." },
+      { word: "Debilitate", definition: "To weaken or make feeble." },
+      { word: "Eloquent", definition: "Fluent or persuasive in speaking or writing." }
+    ];
+    setWords(demoWords);
+  }, []);
+
+  /*
+  // Uncomment this to fetch words from API
+  useEffect(() => {
     const fetchWords = async () => {
       try {
         const response = await fetch("/api/words");
@@ -24,11 +46,22 @@ function Flashcard() {
       }
     };
     fetchWords();
-  }, []); // empty array -> run only once on mount
+  }, []);
+  */
 
-  const handleFlip = () => {
-    setIsFlipped(!isFlipped);
-  };
+  // Keyboard spacebar flips the card
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        handleFlip();
+      }
+    };
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [isFlipped]);
+
+  const handleFlip = () => setIsFlipped(!isFlipped);
 
   const handleNext = () => {
     if (currentIndex < words.length - 1) {
@@ -48,9 +81,11 @@ function Flashcard() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-6">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-6 gap-4">
+      {showClock && <Clock />}
+
       <div className="flex items-center gap-8 w-full max-w-5xl">
-        {/* previous button*/}
+        {/* Previous Button */}
         <button
           className="w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all"
           onClick={handlePrev}
@@ -71,22 +106,7 @@ function Flashcard() {
           </svg>
         </button>
 
-        {/* flashcard */}
-        {/* <div
-          className="flex-1 h-96 bg-white rounded-2xl shadow-xl p-8 flex items-center justify-center cursor-pointer"
-          onClick={handleFlip}
-        >
-          {isFlipped ? (
-            <p className="text-2xl text-gray-700">
-              {words[currentIndex]?.definition}
-            </p>
-          ) : (
-            <p className="text-2xl text-gray-700">
-              {words[currentIndex]?.word}
-            </p>
-          )}
-        </div> */}
-          {/* flashcard */}
+        {/* Flashcard */}
         <div
           className={`flashcard-container flex-1 h-96 bg-transparent cursor-pointer`}
           onClick={handleFlip}
@@ -94,18 +114,18 @@ function Flashcard() {
           <div className={`flashcard ${isFlipped ? "flipped" : ""}`}>
             <div className="flashcard-front flex items-center justify-center rounded-2xl shadow-xl bg-white p-8">
               <p className="text-2xl text-gray-700">
-                {words[currentIndex]?.word}
+                {words[currentIndex]?.word || "Loading..."}
               </p>
             </div>
             <div className="flashcard-back flex items-center justify-center rounded-2xl shadow-xl bg-white p-8">
               <p className="text-2xl text-gray-700">
-                {words[currentIndex]?.definition}
+                {words[currentIndex]?.definition || ""}
               </p>
             </div>
           </div>
         </div>
 
-        {/* next button */}
+        {/* Next Button */}
         <button
           className="w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all"
           onClick={handleNext}

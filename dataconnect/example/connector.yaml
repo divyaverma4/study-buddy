@@ -1,0 +1,8 @@
+connectorId: example
+generate:
+  javascriptSdk:
+    - outputDir: ..\..\front-end-next\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..\front-end-next
+      react: true
+      angular: false
