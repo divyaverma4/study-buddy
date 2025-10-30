@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
     "openai": "^5.11.0",
     "react-spinners": "^0.17.0"
   }

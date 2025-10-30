@@ -6,3 +6,8 @@ generate:
       packageJsonDir: ..\..\front-end-next
       react: true
       angular: false
+    - outputDir: ..\..\src\dataconnect-generated
+      package: "@dataconnect/generated"
+      packageJsonDir: ..\..
+      react: false
+      angular: false
