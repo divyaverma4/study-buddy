@@ -10,7 +10,7 @@ function Loading({ children }) {
     setLoading(true)
     const t = setTimeout(() => {
       setLoading(false)
-    }, 7000)
+    }, 1000)
     // temporary loading screen until server gets integrated back-end for fetching 
 
     return () => clearTimeout(t)
@@ -18,7 +18,7 @@ function Loading({ children }) {
   
   if (loading) {
     return (
-      <div className="text-center flex flex-col justify-center w-full h-screen items-center">
+      <div className="text-center flex flex-col justify-center w-full h-screen items-center bg-[#B4D8E7]">
         <PropagateLoader
           size={50}
           color={"#3192c7"}
@@ -29,7 +29,6 @@ function Loading({ children }) {
     );
   }
 
-  // When loading is complete, render the children (Navbar + Flashcard)
   return <>{children}</>;
 }
 
