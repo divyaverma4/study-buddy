@@ -2,9 +2,11 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {useRouter} from "next/navigation";
 
 function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   //Dark/light mode for initial load
  React.useEffect(() => {
@@ -48,7 +50,9 @@ function Navbar() {
           );
         })}
       </div>
-      <div></div>
+      <div>
+        <button type = "button" onClick={() => router.push("/signin")} className="bg-[#076BA1] rounded font-bold px-4 py-2 h-auto hover:bg-[#055580] cursor-pointer">Sign In</button>
+      </div>
     </nav>
   );
 }
