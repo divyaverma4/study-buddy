@@ -6,7 +6,7 @@
     },
     "apphosting": {
       "port": 5002,
-      "rootDirectory": "/front-end-next/src/app"
+      "rootDirectory": "front-end-next" 
     },
     "auth": {
       "port": 9099
@@ -22,9 +22,11 @@
     },
     "singleProjectMode": true
   },
+
   "dataconnect": {
     "source": "dataconnect"
   },
+
   "functions": [
     {
       "source": "functions",
@@ -42,9 +44,10 @@
       ]
     }
   ],
+
   "apphosting": {
     "backendId": "study-buddy-backend",
-    "rootDir": "/front-end-next/src/app",
+    "rootDir": "front-end-next",
     "ignore": [
       "node_modules",
       ".git",
@@ -53,9 +56,11 @@
       "functions"
     ]
   },
+
   "storage": {
     "rules": "storage.rules"
   },
+
   "database": {
     "rules": "database.rules.json"
   }
