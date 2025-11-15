@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",
+    "firebase": "^12.6.0",
     "firebaseui": "^6.1.0",
     "next": "15.5.4",
     "openai": "^6.3.0",
