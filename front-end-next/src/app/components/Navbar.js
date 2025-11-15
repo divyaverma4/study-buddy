@@ -2,12 +2,17 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../contexts/AuthContext";
+import { sign } from "crypto";
 
 function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { currentUser, isAuthenticated, signOut } = useAuth();
 
   //Dark/light mode for initial load
- React.useEffect(() => {
+  React.useEffect(() => {
     const darkMode = localStorage.getItem("darkMode") === "true";
 
     if (darkMode) {
@@ -48,7 +53,30 @@ function Navbar() {
           );
         })}
       </div>
-      <div></div>
+      {isAuthenticated() ? (
+        <div className="flex items-center gap-4">
+          <span className="text-black">
+            Hey, {currentUser.email?.split("@")[0]}!
+          </span>
+          <button
+            type="button"
+            onClick={() => signOut().then(() => router.push("/"))}
+            className="bg-[#076BA1] rounded font-bold px-4 py-2 h-auto hover:bg-[#055580] cursor-pointer"
+          >
+            Sign Out
+          </button>
+        </div>
+      ) : (
+        <div>
+          <button
+            type="button"
+            onClick={() => router.push("/signin")}
+            className="bg-[#076BA1] rounded font-bold px-4 py-2 h-auto hover:bg-[#055580] cursor-pointer"
+          >
+            Sign In
+          </button>
+        </div>
+      )}
     </nav>
   );
 }
