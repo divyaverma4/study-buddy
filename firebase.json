@@ -6,7 +6,7 @@
     },
     "apphosting": {
       "port": 5002,
-      "rootDirectory": "front-end-next" 
+      "rootDirectory": "front-end-next"
     },
     "auth": {
       "port": 9099
@@ -22,11 +22,9 @@
     },
     "singleProjectMode": true
   },
-
   "dataconnect": {
     "source": "dataconnect"
   },
-
   "functions": [
     {
       "source": "functions",
@@ -42,15 +40,17 @@
       "predeploy": []
     }
   ],
-
-  "apphosting": {
-    "source": "front-end-next"
-  },
-
+  "apphosting": [
+    {
+      "source": "front-end-next",
+      "backendId": "study-buddy",
+      "target": "default",
+      "alwaysDeployFromSource": true
+    }
+  ],
   "storage": {
     "rules": "storage.rules"
   },
-
   "database": {
     "rules": "database.rules.json"
   }
