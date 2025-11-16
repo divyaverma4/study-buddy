@@ -9,7 +9,7 @@ function Clock() {
 
   React.useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(interval); // cleanup
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -21,55 +21,52 @@ function Clock() {
 
 // --- Settings Page ---
 function SettingsPage() {
-  // --- STATES ---
-  const [darkMode, setDarkMode] = React.useState(
-    () => localStorage.getItem("darkMode") === "true" 
-  );
-  const [showClock, setShowClock] = React.useState(
-    () => localStorage.getItem("showClock") === "true" 
-  );
-  const [shuffleCards, setShuffleCards] = React.useState(
-    () => localStorage.getItem("shuffleCards") === "true" 
-  );
-  
-  // --- Apply Theme on Load ---
+  const [darkMode, setDarkMode] = React.useState(false);
+  const [showClock, setShowClock] = React.useState(false);
+  const [shuffleCards, setShuffleCards] = React.useState(false);
+
+  // Load settings from localStorage in the browser
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setDarkMode(localStorage.getItem("darkMode") === "true");
+      setShowClock(localStorage.getItem("showClock") === "true");
+      setShuffleCards(localStorage.getItem("shuffleCards") === "true");
+    }
+  }, []);
+
+  // Apply theme on darkMode change
   React.useEffect(() => {
     if (darkMode) {
       document.documentElement.style.setProperty("--background", "#0b1e3b");
       document.documentElement.style.setProperty("--foreground", "#fff4cc");
     } else {
-      document.documentElement.style.setProperty("--background", "#b4d8e7"); // light blue
-      document.documentElement.style.setProperty("--foreground", "#171717"); // black
+      document.documentElement.style.setProperty("--background", "#b4d8e7");
+      document.documentElement.style.setProperty("--foreground", "#171717");
     }
   }, [darkMode]);
 
-  // --- HANDLERS ---
   const handleDarkModeToggle = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    localStorage.setItem("darkMode", newDarkMode);
-
-    if (newDarkMode) {
-      // Dark mode colors
-      document.documentElement.style.setProperty("--background", "#0b1e3b");
-      document.documentElement.style.setProperty("--foreground", "#fff4cc");
-    } else {
-      // Original light theme colors
-      document.documentElement.style.setProperty("--background", "#b4d8e7"); // light blue
-      document.documentElement.style.setProperty("--foreground", "#171717"); // black
+    if (typeof window !== "undefined") {
+      localStorage.setItem("darkMode", newDarkMode);
     }
   };
 
   const handleClockToggle = () => {
     const newShowClock = !showClock;
     setShowClock(newShowClock);
-    localStorage.setItem("showClock", newShowClock);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("showClock", newShowClock);
+    }
   };
 
   const handleShuffleToggle = () => {
     const newShuffle = !shuffleCards;
     setShuffleCards(newShuffle);
-    localStorage.setItem("shuffleCards", newShuffle);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("shuffleCards", newShuffle);
+    }
   };
 
   return (
@@ -84,7 +81,6 @@ function SettingsPage() {
 
         {/* --- TOGGLES --- */}
         <div className="flex flex-col gap-6">
-
           {/* Dark Mode */}
           <div className="flex items-center gap-4">
             <span className="font-medium text-lg">Dark Mode</span>
@@ -142,4 +138,3 @@ function SettingsPage() {
 }
 
 export default SettingsPage;
-

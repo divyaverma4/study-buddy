@@ -1,7 +1,7 @@
 "use client";
 import "./flashcards.css";
 import Clock from "../components/Clock";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 
 function Flashcard() {
   const [words, setWords] = React.useState([]);
@@ -9,11 +9,13 @@ function Flashcard() {
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [showClock, setShowClock] = React.useState(false);
 
-  // Load clock preference
+  // Load clock preference (SSR-safe)
   useEffect(() => {
-    const savedClockSetting = localStorage.getItem("showClock");
-    if (savedClockSetting !== null) {
-      setShowClock(savedClockSetting === "true");
+    if (typeof window !== "undefined") {
+      const savedClockSetting = localStorage.getItem("showClock");
+      if (savedClockSetting !== null) {
+        setShowClock(savedClockSetting === "true");
+      }
     }
   }, []);
 
@@ -29,25 +31,10 @@ function Flashcard() {
     setWords(demoWords);
   }, []);
 
-  /*
-  // Uncomment this to fetch words from API
-  useEffect(() => {
-    const fetchWords = async () => {
-      try {
-        const response = await fetch("/api/words");
-        const data = await response.json();
-        if (data.success) {
-          setWords(data.words);
-        } else {
-          console.error("Failed to fetch words:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching words:", error);
-      }
-    };
-    fetchWords();
+  // Flip handler (memoized for useEffect)
+  const handleFlip = useCallback(() => {
+    setIsFlipped((prev) => !prev);
   }, []);
-  */
 
   // Keyboard spacebar flips the card
   useEffect(() => {
@@ -59,9 +46,7 @@ function Flashcard() {
     };
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isFlipped]);
-
-  const handleFlip = () => setIsFlipped(!isFlipped);
+  }, [handleFlip]);
 
   const handleNext = () => {
     if (currentIndex < words.length - 1) {
@@ -108,7 +93,7 @@ function Flashcard() {
 
         {/* Flashcard */}
         <div
-          className={`flashcard-container flex-1 h-96 bg-transparent cursor-pointer`}
+          className="flashcard-container flex-1 h-96 bg-transparent cursor-pointer"
           onClick={handleFlip}
         >
           <div className={`flashcard ${isFlipped ? "flipped" : ""}`}>
