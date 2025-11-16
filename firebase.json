@@ -44,15 +44,7 @@
   ],
 
   "apphosting": {
-    "backendId": "study-buddy-backend",
-    "rootDir": "front-end-next",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "functions"
-    ]
+    "source": "front-end-next"
   },
 
   "storage": {
