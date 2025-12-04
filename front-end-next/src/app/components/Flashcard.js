@@ -42,27 +42,76 @@ function Flashcard() {
     }
   }, []);
 
-  // Load words from public/words.json and shuffle
+  // Load words from API or localStorage
   useEffect(() => {
-    async function loadWords() {
-      try {
-        const res = await fetch("/words.json");
-        const data = await res.json();
-        const shuffled = shuffleArray(data); // shuffle words
-        setWords(shuffled);
-        if (shuffled.length > 0) addSeenCard(shuffled[0]); // mark first card as seen
-      } catch (err) {
-        console.error("Failed to load words:", err);
-      }
-    }
     loadWords();
   }, []);
 
-  // Flip handler
+  const loadWords = async () => {
+    try {
+      // Try to load from localStorage first
+      const cachedWords = localStorage.getItem("vocabularyWords");
+      if (cachedWords) {
+        const parsed = JSON.parse(cachedWords);
+        setWords(parsed);
+        return;
+      }
+
+      // If no cached words, fetch from API
+      const response = await fetch("/api/words?count=20");
+      if (!response.ok) {
+        throw new Error("Failed to fetch words");
+      }
+
+      const data = await response.json();
+      const fetchedWords = data.words || [];
+
+      // Cache the words in localStorage
+      localStorage.setItem("vocabularyWords", JSON.stringify(fetchedWords));
+      setWords(fetchedWords);
+    } catch (error) {
+      console.error("Error loading words:", error);
+      // Fallback to demo words if API fails
+      const demoWords = [
+        { word: "Abate", definition: "To become less intense or widespread." },
+        { word: "Benevolent", definition: "Well-meaning and kind." },
+        { word: "Cacophony", definition: "A harsh, discordant mixture of sounds." },
+        { word: "Debilitate", definition: "To weaken or make feeble." },
+        { word: "Eloquent", definition: "Fluent or persuasive in speaking or writing." }
+      ];
+      setWords(demoWords);
+    }
+  };
+
+  // Flip handler (memoized for useEffect)
   const handleFlip = useCallback(() => {
     setIsFlipped((prev) => !prev);
     addSeenCard(words[currentIndex]);
   }, [words, currentIndex]);
+
+  // Mark current card as seen
+  const markCardAsSeen = useCallback(() => {
+    if (words.length === 0 || !words[currentIndex]) return;
+
+    const currentWord = words[currentIndex];
+    const seenCardsJson = localStorage.getItem("seenCards");
+    const seenCards = seenCardsJson ? JSON.parse(seenCardsJson) : [];
+
+    // Check if card is already marked as seen
+    const alreadySeen = seenCards.some((card) => card.word === currentWord.word);
+
+    if (!alreadySeen) {
+      seenCards.push(currentWord);
+      localStorage.setItem("seenCards", JSON.stringify(seenCards));
+    }
+  }, [words, currentIndex]);
+
+  // Mark card as seen when user flips it
+  useEffect(() => {
+    if (isFlipped) {
+      markCardAsSeen();
+    }
+  }, [isFlipped, markCardAsSeen]);
 
   const handleNext = () => {
     if (currentIndex < words.length - 1) {

@@ -1,5 +1,4 @@
 import { initializeApp, getApps } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getDatabase, connectDatabaseEmulator } from "firebase/database";
 
@@ -27,9 +26,11 @@ if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true") {
   connectDatabaseEmulator(database, "localhost", 9000);
 }
 
-let analytics;
-if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
-}
+// Note: Analytics disabled to avoid Installations API permission errors
+// Re-enable by uncommenting below and importing getAnalytics
+// let analytics;
+// if (typeof window !== "undefined") {
+//   analytics = getAnalytics(app);
+// }
 
-export { app, auth, database, analytics };
+export { app, auth, database };
