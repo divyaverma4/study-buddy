@@ -11,6 +11,10 @@ export default function Quiz() {
   const [finished, setFinished] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
 
+  // TODO: Replace with your Firebase Function URL
+const QUIZ_API_URL = process.env.NEXT_PUBLIC_QUIZ_API_URL;
+
+
   useEffect(() => {
     async function loadQuiz() {
       const seenWords = JSON.parse(localStorage.getItem("seenCards") || "[]");
@@ -22,7 +26,7 @@ export default function Quiz() {
       const shuffled = [...seenWords].sort(() => Math.random() - 0.5).slice(0, 5);
 
       try {
-        const res = await fetch("/api/quiz", {
+        const res = await fetch(QUIZ_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ words: shuffled }),
@@ -48,7 +52,7 @@ export default function Quiz() {
     const isCorrect = selected === quiz[current].correct;
     if (isCorrect) setScore((s) => s + 1);
 
-    // Save results to localStorage for progress tracking
+    // Save results for progress tracking
     const results = JSON.parse(localStorage.getItem("quizResults") || "[]");
     results.push({
       word: quiz[current].word,
@@ -115,9 +119,7 @@ export default function Quiz() {
                 {Object.entries(q.options).map(([key, val]) => (
                   <button
                     key={key}
-                    className={`p-2 border rounded w-full ${
-                      selected === key ? "bg-blue-500 text-white" : "bg-white"
-                    }`}
+                    className={`p-2 border rounded w-full ${selected === key ? "bg-blue-500 text-white" : "bg-white"}`}
                     onClick={() => setSelected(key)}
                     disabled={showAnswer}
                   >
@@ -137,10 +139,7 @@ export default function Quiz() {
               ) : (
                 <div className="mt-4">
                   <p>
-                    Correct answer:{" "}
-                    <strong>
-                      {q.correct}: {q.options[q.correct]}
-                    </strong>
+                    Correct answer: <strong>{q.correct}: {q.options[q.correct]}</strong>
                   </p>
                   <p className="mt-2 text-gray-700">{q.explanation}</p>
                   <button

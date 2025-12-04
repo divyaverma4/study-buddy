@@ -1,17 +1,26 @@
-const functions = require("firebase-functions");
+const { https } = require("firebase-functions/v2");   // ✅ v2 import
+const { defineSecret } = require("firebase-functions/params");
 const OpenAI = require("openai");
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
+app.use(cors({ origin: true }));
+app.use(express.json());
 
-import OpenAI from "openai";
+// Define the secret
+const openaiApiKey = defineSecret("OPENAI_API_KEY");
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-export async function POST(req) {
+// POST /quiz
+app.post("/quiz", async (req, res) => {
   try {
-    const { words } = await req.json();
+    const client = new OpenAI({
+      apiKey: openaiApiKey.value(), // ✅ safe at runtime
+    });
+
+    const { words } = req.body;
     if (!words || words.length === 0) {
-      return new Response(JSON.stringify({ error: "No words provided" }), { status: 400 });
+      return res.status(400).json({ error: "No words provided" });
     }
 
     const quizPromises = words.map(async (w) => {
@@ -37,7 +46,7 @@ Format strictly as JSON:
 }
 `;
 
-      const response = await openai.chat.completions.create({
+      const response = await client.chat.completions.create({
         model: "gpt-4",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.7,
@@ -63,10 +72,15 @@ Format strictly as JSON:
     });
 
     const quiz = await Promise.all(quizPromises);
-
-    return new Response(JSON.stringify({ quiz }), { status: 200 });
+    res.json({ quiz });
   } catch (err) {
     console.error(err);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    res.status(500).json({ error: err.message });
   }
-}
+});
+
+// ✅ Export with v2 API and secret dependency
+exports.api = https.onRequest(
+  { region: "us-central1", secrets: [openaiApiKey] },
+  app
+);
