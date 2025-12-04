@@ -27,7 +27,8 @@ function Navbar() {
   }, []);
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Progress", path: "/progress/1" }, // temporary static link for demonstration (change id in future)
+    { name: "Quiz", path: "/quiz" },
+    { name: "Progress", path: "/progress" }, // temporary static link for demonstration (change id in future)
     { name: "Settings", path: "/settings" },
   ];
 
