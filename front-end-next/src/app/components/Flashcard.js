@@ -72,14 +72,81 @@ function Flashcard() {
     } catch (error) {
       console.error("Error loading words:", error);
       // Fallback to demo words if API fails
-      const demoWords = [
-        { word: "Abate", definition: "To become less intense or widespread." },
-        { word: "Benevolent", definition: "Well-meaning and kind." },
-        { word: "Cacophony", definition: "A harsh, discordant mixture of sounds." },
-        { word: "Debilitate", definition: "To weaken or make feeble." },
-        { word: "Eloquent", definition: "Fluent or persuasive in speaking or writing." }
-      ];
-      setWords(demoWords);
+      // Fallback to demo words if API fails
+const demoWords = shuffleArray([
+  { word: "Abate", definition: "To become less intense or widespread." },
+  { word: "Aberration", definition: "A departure from what is normal." },
+  { word: "Acrimonious", definition: "Angry and bitter." },
+  { word: "Alacrity", definition: "Brisk and cheerful readiness." },
+  { word: "Ambiguous", definition: "Open to more than one interpretation." },
+  { word: "Anomaly", definition: "Something that deviates from the norm." },
+  { word: "Apathy", definition: "Lack of interest or emotion." },
+  { word: "Arduous", definition: "Involving great effort or difficulty." },
+  { word: "Assiduous", definition: "Showing great care and perseverance." },
+  { word: "Austere", definition: "Severe or strict in manner." },
+
+  { word: "Benevolent", definition: "Well-meaning and kind." },
+  { word: "Brazen", definition: "Bold and without shame." },
+  { word: "Cacophony", definition: "A harsh mixture of sounds." },
+  { word: "Callous", definition: "Emotionally insensitive." },
+  { word: "Candid", definition: "Truthful and straightforward." },
+  { word: "Capricious", definition: "Given to sudden changes in mood." },
+  { word: "Clandestine", definition: "Kept secret." },
+  { word: "Coerce", definition: "To force someone to act." },
+  { word: "Complacent", definition: "Self-satisfied and unaware of danger." },
+  { word: "Concur", definition: "To agree." },
+
+  { word: "Debilitate", definition: "To weaken." },
+  { word: "Deference", definition: "Polite respect." },
+  { word: "Diligent", definition: "Hard-working and careful." },
+  { word: "Discretion", definition: "The quality of being careful in speech." },
+  { word: "Eloquent", definition: "Persuasive and expressive." },
+  { word: "Empirical", definition: "Based on observation." },
+  { word: "Enigma", definition: "Something mysterious." },
+  { word: "Erudite", definition: "Very knowledgeable." },
+  { word: "Exacerbate", definition: "To make worse." },
+  { word: "Fallacy", definition: "A mistaken belief." },
+
+  { word: "Frugal", definition: "Careful with money." },
+  { word: "Futile", definition: "Pointless or ineffective." },
+  { word: "Gregarious", definition: "Enjoys social interaction." },
+  { word: "Hackneyed", definition: "Overused and unoriginal." },
+  { word: "Hinder", definition: "To delay or obstruct." },
+  { word: "Hypocrisy", definition: "Pretending to have morals you don’t." },
+  { word: "Imminent", definition: "About to happen." },
+  { word: "Impartial", definition: "Fair and unbiased." },
+  { word: "Imperative", definition: "Absolutely necessary." },
+  { word: "Incessant", definition: "Never stopping." },
+
+  { word: "Indolent", definition: "Lazy." },
+  { word: "Inevitable", definition: "Certain to happen." },
+  { word: "Ingenuous", definition: "Innocent and trusting." },
+  { word: "Insidious", definition: "Harmful in a sneaky way." },
+  { word: "Intrepid", definition: "Fearless." },
+  { word: "Judicious", definition: "Having good judgment." },
+  { word: "Lucid", definition: "Clear and understandable." },
+  { word: "Meticulous", definition: "Very careful and precise." },
+  { word: "Mundane", definition: "Ordinary and boring." },
+  { word: "Negligent", definition: "Failing to take proper care." },
+
+  { word: "Obscure", definition: "Not well known or unclear." },
+  { word: "Ostentatious", definition: "Showy and flashy." },
+  { word: "Perilous", definition: "Dangerous." },
+  { word: "Pragmatic", definition: "Practical and realistic." },
+  { word: "Profound", definition: "Very deep or meaningful." },
+  { word: "Resilient", definition: "Able to recover quickly." },
+  { word: "Scrutiny", definition: "Close examination." },
+  { word: "Subtle", definition: "Not obvious." },
+  { word: "Tenacious", definition: "Persistent." },
+  { word: "Vigilant", definition: "Alert and watchful." },
+
+  { word: "Voracious", definition: "Having a huge appetite." },
+  { word: "Wary", definition: "Cautious." },
+  { word: "Zealous", definition: "Extremely enthusiastic." }
+]);
+
+setWords(demoWords);
+
     }
   };
 
