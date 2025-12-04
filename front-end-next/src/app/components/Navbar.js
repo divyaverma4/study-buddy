@@ -4,30 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
-import { sign } from "crypto";
 
 function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, isAuthenticated, signOut } = useAuth();
 
-  //Dark/light mode for initial load
-  React.useEffect(() => {
-    const darkMode = localStorage.getItem("darkMode") === "true";
-
-    if (darkMode) {
-      // Dark mode colors
-      document.documentElement.style.setProperty("--background", "#0b1e3b");
-      document.documentElement.style.setProperty("--foreground", "#fff4cc");
-    } else {
-      // Light mode colors
-      document.documentElement.style.setProperty("--background", "#b4d8e7");
-      document.documentElement.style.setProperty("--foreground", "#171717");
-    }
-  }, []);
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Progress", path: "/progress/1" }, // temporary static link for demonstration (change id in future)
+    { name: "Quiz", path: "/quiz" },
+    { name: "Progress", path: "/progress" },
     { name: "Settings", path: "/settings" },
   ];
 
