@@ -10,25 +10,22 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [finished, setFinished] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [explanation, setExplanation] = useState("");
 
-  // Load quiz questions
   useEffect(() => {
     async function loadQuiz() {
       const seenWords = JSON.parse(localStorage.getItem("seenCards") || "[]");
-      if (seenWords.length === 0) {
+      if (!seenWords.length) {
         setLoading(false);
         return;
       }
 
-      const shuffled = [...seenWords].sort(() => Math.random() - 0.5);
-      const quizWords = shuffled.slice(0, Math.min(5, shuffled.length));
+      const shuffled = [...seenWords].sort(() => Math.random() - 0.5).slice(0, 5);
 
       try {
         const res = await fetch("/api/quiz", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ words: quizWords }),
+          body: JSON.stringify({ words: shuffled }),
         });
 
         if (!res.ok) throw new Error("Failed to fetch quiz");
@@ -45,42 +42,27 @@ export default function Quiz() {
     loadQuiz();
   }, []);
 
-  const handleSubmit = async () => {
-    if (!quiz[current]) return;
+  const handleSubmit = () => {
+    if (!quiz[current] || !selected) return;
 
     const isCorrect = selected === quiz[current].correct;
     if (isCorrect) setScore((s) => s + 1);
 
     // Save results to localStorage for progress tracking
     const results = JSON.parse(localStorage.getItem("quizResults") || "[]");
-    results.push({ word: quiz[current].word, correct: isCorrect });
+    results.push({
+      word: quiz[current].word,
+      correct: isCorrect,
+      selected,
+      explanation: quiz[current].explanation || "No explanation available",
+    });
     localStorage.setItem("quizResults", JSON.stringify(results));
-
-    // Fetch AI explanation
-    try {
-      const res = await fetch("/api/explanation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          word: quiz[current].word,
-          definition: quiz[current].definition,
-          correctOption: quiz[current].correct,
-          options: quiz[current].options,
-        }),
-      });
-      const data = await res.json();
-      setExplanation(data.explanation || " ");
-    } catch (err) {
-      console.error(err);
-      setExplanation("Failed to get explanation.");
-    }
 
     setShowAnswer(true);
   };
 
   const handleNext = () => {
     setShowAnswer(false);
-    setExplanation("");
     setSelected("");
     if (current < quiz.length - 1) {
       setCurrent((c) => c + 1);
@@ -96,15 +78,13 @@ export default function Quiz() {
     setScore(0);
     setFinished(false);
     setShowAnswer(false);
-    setExplanation("");
     setLoading(true);
 
-    const event = new Event("reloadQuiz");
-    window.dispatchEvent(event);
+    window.location.reload();
   };
 
   if (loading) return <p>Loading quiz...</p>;
-  if (quiz.length === 0) return <p>No seen words to generate a quiz.</p>;
+  if (!quiz.length) return <p>No seen words to generate quiz.</p>;
 
   const q = quiz[current];
 
@@ -116,9 +96,7 @@ export default function Quiz() {
           {finished ? (
             <div className="text-center">
               <h2 className="text-xl font-bold mb-4">Quiz Complete!</h2>
-              <p className="mb-4">
-                Your score: {score}/{quiz.length}
-              </p>
+              <p className="mb-4">Your score: {score}/{quiz.length}</p>
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded"
                 onClick={handleRestart}
@@ -138,9 +116,7 @@ export default function Quiz() {
                   <button
                     key={key}
                     className={`p-2 border rounded w-full ${
-                      selected === key
-                        ? "bg-blue-500 text-white"
-                        : "bg-white"
+                      selected === key ? "bg-blue-500 text-white" : "bg-white"
                     }`}
                     onClick={() => setSelected(key)}
                     disabled={showAnswer}
@@ -166,7 +142,7 @@ export default function Quiz() {
                       {q.correct}: {q.options[q.correct]}
                     </strong>
                   </p>
-                  <p className="mt-2 text-gray-700">{explanation}</p>
+                  <p className="mt-2 text-gray-700">{q.explanation}</p>
                   <button
                     className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
                     onClick={handleNext}
